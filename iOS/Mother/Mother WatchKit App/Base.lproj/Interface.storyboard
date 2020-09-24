@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder.WatchKit.Storyboard" version="3.0" toolsVersion="17156" targetRuntime="watchKit" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="AgC-eL-Hgc">
     <device id="watch38"/>
     <dependencies>
+        <deployment identifier="watchOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="17034"/>
     </dependencies>
@@ -9,7 +10,7 @@
         <!--root-->
         <scene sceneID="aou-V4-d1y">
             <objects>
-                <controller identifier="root" id="AgC-eL-Hgc" customClass="RootInterfaceController" customModule="Mother_WatchKit_App" customModuleProvider="target">
+                <controller identifier="root" id="AgC-eL-Hgc" customClass="RootInterfaceController" customModule="Geoffrey_Watch" customModuleProvider="target">
                     <items>
                         <group width="1" alignment="left" layout="vertical" id="fp1-vf-vYu">
                             <items>
@@ -24,7 +25,7 @@
         <!--screen-->
         <scene sceneID="1Kg-vT-dfQ">
             <objects>
-                <controller identifier="screen" id="udJ-pR-1m4" customClass="ScreenInterfaceController" customModule="Mother_WatchKit_Extension">
+                <controller identifier="screen" id="udJ-pR-1m4" customClass="ScreenInterfaceController" customModule="Geoffrey_Watch_Extension">
                     <items>
                         <group width="1" alignment="left" layout="vertical" id="IHW-mD-zmU">
                             <items>

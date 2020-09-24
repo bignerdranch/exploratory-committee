@@ -52,18 +52,6 @@ extension AppDelegate: WCSessionDelegate {
             print("error \(error)")
         }
         print("state \(activationState.rawValue)")
-        
-        if activationState == .activated {
-            let project = Project.demoProject()
-            let jsonData = try! JSONEncoder().encode(project)
-            
-            let tempDir = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
-            let file = tempDir.appendingPathComponent("\(UUID().uuidString).json")
-            try! jsonData.write(to: file)
-            
-            print("sending file")
-            session.transferFile(file, metadata: nil)
-        }
     }
     
     func sessionReachabilityDidChange(_ session: WCSession) {
