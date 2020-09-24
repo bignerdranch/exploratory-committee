@@ -1,22 +1,21 @@
+
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Projects from './components/projects';
-import ProjectContainer from './components/projectContainer';
+import Project from './components/project';
 
 Vue.use(VueRouter);
 
 export const routes = [
   {
     path: '/',
-    name: 'mother',
-    component: ProjectContainer,
-  },
-  {
-    path: '/projects',
-    name: 'projects',
     component: Projects,
   },
- 
+  {
+    path: '/project/:id',
+    name: 'Project',
+    component: Project,
+  },
 ];
 
 export default new VueRouter({

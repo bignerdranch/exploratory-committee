@@ -11,47 +11,47 @@
       </template>
     </div>
 
-  <md-dialog :md-active.sync="showMenu">
-    <form novalidate class="md-layout" @submit.prevent="setActionsOnSpot">
-      <md-card class="md-layout-item">
-        <md-card-content>
-            <md-field>
-              <label for="Target">Target</label>
-              <select name="target" id="target" v-model="targetScreen">
-                <option></option>
-                <template v-for="(screen, index) in screens">
-                  <option :value="screen.name" :key="index" >{{ screen.name }}</option>
-                </template>
-              </select>
-            </md-field>
-            
-            <md-field>
-              <label for="transition">Transition</label>
-              <select name="transition" id="transition" v-model="targetTransition">
-                <option></option>
-                <template v-for="(transition, index) in transitionList">
-                  <option :value="transition" :key="index" >{{ transition }}</option>
-                </template>
-              </select>
-            </md-field>
-            
-            <md-field>
-              <label for="transition">Triggers</label>
-              <select name="triggers" id="triggers" v-model="targetTrigger">
-                <option></option>
-                <template v-for="(trigger, index) in triggersList">
-                  <option :value="trigger" :key="index" >{{ trigger }}</option>
-                </template>
-              </select>
-            </md-field>
-        </md-card-content>
+    <md-dialog :md-active.sync="showMenu">
+      <form novalidate class="md-layout" @submit.prevent="setActionsOnSpot">
+        <md-card class="md-layout-item">
+          <md-card-content>
+              <md-field>
+                <label for="Target">Target</label>
+                <select name="target" id="target" v-model="targetScreen">
+                  <option></option>
+                  <template v-for="(screen, index) in screens">
+                    <option :value="screen.name" :key="index" >{{ screen.name }}</option>
+                  </template>
+                </select>
+              </md-field>
+              
+              <md-field>
+                <label for="transition">Transition</label>
+                <select name="transition" id="transition" v-model="targetTransition">
+                  <option></option>
+                  <template v-for="(transition, index) in transitionList">
+                    <option :value="transition" :key="index" >{{ transition }}</option>
+                  </template>
+                </select>
+              </md-field>
+              
+              <md-field>
+                <label for="transition">Triggers</label>
+                <select name="triggers" id="triggers" v-model="targetTrigger">
+                  <option></option>
+                  <template v-for="(trigger, index) in triggersList">
+                    <option :value="trigger" :key="index" >{{ trigger }}</option>
+                  </template>
+                </select>
+              </md-field>
+          </md-card-content>
 
-        <md-card-actions>
-          <md-button type="submit" class="md-primary">Done</md-button>
-        </md-card-actions>
-      </md-card>
-    </form>
-  </md-dialog>
+          <md-card-actions>
+            <md-button type="submit" class="md-primary">Done</md-button>
+            </md-card-actions>
+          </md-card>
+        </form>
+    </md-dialog>
   </div>  
 </template>
 
@@ -134,7 +134,6 @@ export default {
       
       listOfImages.forEach(image => {
         image.addEventListener('mousedown', this.handlerOnMouseDown, true);
-        // image.addEventListener('mousemove', this.handlerOnMouseMove, true);
         image.addEventListener('mouseup', this.removeListeners, true);
       });
     },
@@ -142,7 +141,6 @@ export default {
       this.x2 = e.clientX;
       this.y2 = e.clientY;
       document.removeEventListener('mousedown', this.handlerOnMouseDown, true);
-      // document.removeEventListener('mousemove', this.handlerOnMouseMove, true);
       document.removeEventListener('mouseup', this.removeListeners, true);
     },
     handlerOnMouseDown(e) {

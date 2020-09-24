@@ -1,7 +1,7 @@
 <template>
   <div class="page-container">
     <md-toolbar class="md-primary">
-      <md-button class="md-icon-button" @click="showNavigation = true">
+      <md-button class="md-icon-button" @click="openMenu">
         <md-icon>menu</md-icon>
       </md-button>
       
@@ -64,23 +64,23 @@
             <span class="md-list-item-text">Add New Project</span>
         </md-list-item>
         <md-divider></md-divider>
-      <!-- SIDE MENU OPEN -->
-        <md-list-item>
-          <md-icon>watch</md-icon>
-          <span class="md-list-item-text">project 1</span>
-        </md-list-item>
 
-        <md-list-item>
-          <md-icon>watch</md-icon>
-          <span class="md-list-item-text">projcet 2</span>
-        </md-list-item>
-
+        <template v-for="(item, index) in projectsList">
+          <router-link :key=index :to="{ name: 'Project', params: { id: item._id } }">
+            <md-list-item>
+              <md-icon>watch</md-icon>
+              <span class="md-list-item-text">{{ item.name }}</span>
+            </md-list-item>
+          </router-link>
+        </template>
       </md-list>
     </md-drawer>
   </div>
 </template>
 
 <script>
+import API from '../service';
+
 export default {
   name: 'Header',
    props: {
@@ -98,6 +98,7 @@ export default {
     showNavigation: false,
     showSidepanel: false,
     numHotspot: 0,
+    projectsList: [],
   }),
    watch: {
     finished() {
@@ -129,8 +130,9 @@ export default {
           this.base64ImageList.push({ file: e.target.result, name: file.name, uuid: this.uuidv4() });
       };
     },
-    addProject() {
-      console.log('submit new project', this.newProjectName);
+    async addProject() {
+      API.addNewProject(this.newProjectName);
+      this.projectsList = await API.getAllProjects();
       this.showAddProjectDialog = false;
       this.newProjectName = '';
     },
@@ -139,6 +141,10 @@ export default {
         const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
       });
+    },
+    async openMenu() {
+      this.projectsList = await API.getAllProjects();
+      this.showNavigation = true;
     },
   }
 }
