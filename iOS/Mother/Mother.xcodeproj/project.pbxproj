@@ -26,6 +26,7 @@
 		0EBBAB4F251CC0FA00B04837 /* UIImage+Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EBBAB4E251CC0FA00B04837 /* UIImage+Screen.swift */; };
 		0EBBAB53251CC1DB00B04837 /* UIImage+Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EBBAB4E251CC0FA00B04837 /* UIImage+Screen.swift */; };
 		0EBBAB58251CC46700B04837 /* ScreenInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EBBAB57251CC46700B04837 /* ScreenInterfaceController.swift */; };
+		0EBBAB5D251CD3F800B04837 /* Communicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EBBAB5C251CD3F800B04837 /* Communicator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -92,6 +93,7 @@
 		0EBBAB45251C0E5F00B04837 /* ScreenModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenModel.swift; sourceTree = "<group>"; };
 		0EBBAB4E251CC0FA00B04837 /* UIImage+Screen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Screen.swift"; sourceTree = "<group>"; };
 		0EBBAB57251CC46700B04837 /* ScreenInterfaceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenInterfaceController.swift; sourceTree = "<group>"; };
+		0EBBAB5C251CD3F800B04837 /* Communicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Communicator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -167,6 +169,7 @@
 				0EBBAB34251C086D00B04837 /* Info.plist */,
 				0EBBAB4E251CC0FA00B04837 /* UIImage+Screen.swift */,
 				0EBBAB57251CC46700B04837 /* ScreenInterfaceController.swift */,
+				0EBBAB5C251CD3F800B04837 /* Communicator.swift */,
 			);
 			path = "Mother WatchKit Extension";
 			sourceTree = "<group>";
@@ -316,6 +319,7 @@
 			files = (
 				0EBBAB2F251C086D00B04837 /* ExtensionDelegate.swift in Sources */,
 				0EBBAB58251CC46700B04837 /* ScreenInterfaceController.swift in Sources */,
+				0EBBAB5D251CD3F800B04837 /* Communicator.swift in Sources */,
 				0EBBAB4A251CBF8500B04837 /* ScreenModel.swift in Sources */,
 				0EBBAB2D251C086D00B04837 /* InterfaceController.swift in Sources */,
 				0EBBAB4F251CC0FA00B04837 /* UIImage+Screen.swift in Sources */,
@@ -495,7 +499,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 7.0;
+				WATCHOS_DEPLOYMENT_TARGET = 5.0;
 			};
 			name = Debug;
 		};
@@ -518,7 +522,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				VALIDATE_PRODUCT = YES;
-				WATCHOS_DEPLOYMENT_TARGET = 7.0;
+				WATCHOS_DEPLOYMENT_TARGET = 5.0;
 			};
 			name = Release;
 		};
@@ -538,7 +542,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 7.0;
+				WATCHOS_DEPLOYMENT_TARGET = 5.0;
 			};
 			name = Debug;
 		};
@@ -559,7 +563,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				VALIDATE_PRODUCT = YES;
-				WATCHOS_DEPLOYMENT_TARGET = 7.0;
+				WATCHOS_DEPLOYMENT_TARGET = 5.0;
 			};
 			name = Release;
 		};
@@ -571,7 +575,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = LPR82YBESG;
 				INFOPLIST_FILE = Mother/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -592,7 +596,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = LPR82YBESG;
 				INFOPLIST_FILE = Mother/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

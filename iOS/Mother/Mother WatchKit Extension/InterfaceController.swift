@@ -12,6 +12,7 @@ import Foundation
 class RootInterfaceController: WKInterfaceController {
 
     override func awake(withContext context: Any?) {
+        print("\(Communicator.shared.session)")
         // Configure interface objects here.
     }
     

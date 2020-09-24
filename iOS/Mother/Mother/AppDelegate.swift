@@ -6,13 +6,16 @@
 //
 
 import UIKit
+import WatchConnectivity
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
+    let session = WCSession.default
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        session.delegate = self
+        session.activate()
         // Override point for customization after application launch.
         return true
     }
@@ -34,3 +37,48 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 }
 
+extension AppDelegate: WCSessionDelegate {
+    func sessionDidBecomeInactive(_ session: WCSession) {
+        print("inactive")
+
+    }
+    
+    func sessionDidDeactivate(_ session: WCSession) {
+        print("deactivate")
+    }
+    
+    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
+        if let error = error {
+            print("error \(error)")
+        }
+        print("state \(activationState.rawValue)")
+        
+        if activationState == .activated {
+            let project = Project.demoProject()
+            let jsonData = try! JSONEncoder().encode(project)
+            
+            let tempDir = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
+            let file = tempDir.appendingPathComponent("\(UUID().uuidString).json")
+            try! jsonData.write(to: file)
+            
+            print("sending file")
+            session.transferFile(file, metadata: nil)
+        }
+    }
+    
+    func sessionReachabilityDidChange(_ session: WCSession) {
+        
+    }
+    
+    func session(_ session: WCSession, didReceiveMessageData messageData: Data) {
+
+    }
+    
+    func session(_ session: WCSession, didFinish fileTransfer: WCSessionFileTransfer, error: Error?) {
+        print("file xfer complete")
+        if let error = error {
+            print("error! \(error)")
+        }
+    }
+    
+}
