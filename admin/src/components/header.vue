@@ -6,20 +6,24 @@
       <li class="hotspot-wrapper"><button @click="AddHotspot()">Add Hotspot <span class="hotspot"></span></button> </li>
     </ul>
 
-    <span class="project-title">Project Title</span>
+    <span class="project-title">{ Project Title }</span>
 
     <router-link :to="{ name: 'projects'}">All Projects</router-link>
 
     <md-dialog :md-active.sync="showDialog">
       <md-dialog-title>Upload Screens</md-dialog-title>
-        <md-field>
-          <label>Multiple</label>
-          <md-file v-model="multiple" multiple />
-        </md-field>
-
+      <form enctype="multipart/form-data" novalidate>
+        <input 
+          type="file" 
+          name="uploadFieldName" 
+          @change="handleImages($event.target.files)"
+          accept="image/*" 
+          multiple
+          class="input-file">
+      </form>
       <md-dialog-actions>
         <md-button class="md-primary" @click="showDialog = false">CLOSE</md-button>
-        <md-button class="md-primary" @click="showDialog = false" @md-change="saveFiles">UPLOAD</md-button>
+        <md-button class="md-primary" @click="saveFiles">UPLOAD</md-button>
       </md-dialog-actions>
     </md-dialog>
   </div>
@@ -31,17 +35,26 @@ export default {
   data: () => ({
     showDialog: false,
     multiple: null,
+    base64ImageList: [],
   }),
   methods: {
-    addScreens() {
-      
-    },
     AddHotspot() {
-      console.log('ADD HOTSPOT CLICKED');
+      this.$emit('hotspot', true);
     },
-    saveFiles(event) {
-      console.log('saving', event);
-    }
+    saveFiles() {
+      this.showDialog = false;
+      this.$emit('screens', this.base64ImageList)
+    },
+    handleImages(files) {
+      Array.from(files).forEach(file =>  this.createBase64Image(file));
+    },
+    createBase64Image(file) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = e =>{
+          this.base64ImageList.push(e.target.result);
+      };
+    },
   }
 }
 </script>
@@ -107,6 +120,7 @@ ul {
 a {
   color: inherit;
   text-decoration: inherit;
+  padding-right: 10px;
 }
 
 .md-dialog /deep/.md-dialog-container {
