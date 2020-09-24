@@ -28,7 +28,9 @@ class RootInterfaceController: WKInterfaceController {
     
     override func willActivate() {
         // This method is called when watch view controller is about to be visible to user
-        
+        print("pushing")
+        self.pushController(withName: "project", context: Project.demoProject())
+
     }
     
     override func didDeactivate() {

@@ -14,8 +14,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let session = WCSession.default
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        session.delegate = self
-        session.activate()
+        if WCSession.isSupported() {
+            let session = Communicator.shared.session
+            print("Enabling session \(session)")
+
+        }
         // Override point for customization after application launch.
         return true
     }
@@ -35,38 +38,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
 
-}
-
-extension AppDelegate: WCSessionDelegate {
-    func sessionDidBecomeInactive(_ session: WCSession) {
-        print("inactive")
-
-    }
-    
-    func sessionDidDeactivate(_ session: WCSession) {
-        print("deactivate")
-    }
-    
-    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
-        if let error = error {
-            print("error \(error)")
-        }
-        print("state \(activationState.rawValue)")
-    }
-    
-    func sessionReachabilityDidChange(_ session: WCSession) {
-        
-    }
-    
-    func session(_ session: WCSession, didReceiveMessageData messageData: Data) {
-
-    }
-    
-    func session(_ session: WCSession, didFinish fileTransfer: WCSessionFileTransfer, error: Error?) {
-        print("file xfer complete")
-        if let error = error {
-            print("error! \(error)")
-        }
-    }
-    
 }

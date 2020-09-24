@@ -8,6 +8,29 @@
 import WatchKit
 import Foundation
 
+extension CGPoint {
+    func point(with scale: CGFloat) -> Point {
+        return Point(x: Double(x * scale), y: Double(y * scale))
+    }
+}
+extension Rect {
+    func contains(_ point: Point) -> Bool {
+        return
+            point.x > origin.x && point.x < (origin.x + size.width) &&
+            point.y > origin.y && point.y < (origin.y + size.height)
+    }
+}
+
+extension Screen {
+    func hitTest(for point: Point) -> Hotspot? {
+        for hotspot in hotspots {
+            if hotspot.rect.contains(point) {
+                return hotspot
+            }
+        }
+        return nil
+    }
+}
 
 class ScreenInterfaceController: WKInterfaceController {
     @IBOutlet weak var image: WKInterfaceImage!
@@ -29,9 +52,14 @@ class ScreenInterfaceController: WKInterfaceController {
     
     override func awake(withContext context: Any?) {
         super.awake(withContext: context)
-        
+        print("awake")
+
         if let screen = context as? Screen {
             self.screen = screen
+        } else if let project = context as? Project{
+            self.screen = project.screens.first!
+        } else {
+            print("ctx")
         }
         // Configure interface objects here.
     }
@@ -59,9 +87,15 @@ class ScreenInterfaceController: WKInterfaceController {
 
     
     @IBAction func didTap(_ sender: WKTapGestureRecognizer) {
-        
-        print("tap")
-        flashHotspots()
+        let scale: CGFloat = WKInterfaceDevice.current().screenScale
+        let point =  sender.locationInObject().point(with: scale)
+        print("tap \(point)")
+        if let hotspot = screen?.hitTest(for: point) {
+            print("ping! \(hotspot)")
+            transition(to: hotspot)
+        } else {
+            flashHotspots()
+        }
     }
     
     @IBAction func didSwipeRight(_ sender: WKSwipeGestureRecognizer) {
@@ -82,6 +116,24 @@ class ScreenInterfaceController: WKInterfaceController {
     }
     @IBAction func didLongPress(_ sender: WKLongPressGestureRecognizer) {
         print("longpress")
-
+    }
+    
+    func transition(to hotspot: Hotspot) {
+        switch hotspot.transition {
+        case .fromLeft:
+            pushController(withName: "screen", context: hotspot)
+            break
+        case .fromRight:
+            pushController(withName: "screen", context: screen)
+            break
+        case .fromTop:
+            break
+        case .fromBottom:
+            break
+        case .fade:
+            break
+        case .instant:
+            break
+        }
     }
 }

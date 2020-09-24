@@ -55,7 +55,13 @@ class ProjectListViewController: UITableViewController {
         try! jsonData.write(to: file)
         
         print("sending file")
-        session.transferFile(file, metadata: nil)
+        let xfer = session.transferFile(file, metadata: nil)
+        let progress = xfer.progress
+        let cell = tableView.cellForRow(at: indexPath)
+        let pView = UIProgressView(progressViewStyle: .bar)
+        cell?.accessoryView = pView
+        pView.observedProgress = progress
+        
     }
 
     /*
