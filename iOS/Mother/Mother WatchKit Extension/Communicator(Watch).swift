@@ -19,6 +19,9 @@ class Communicator: NSObject {
         session.delegate = self
         session.activate()
     }
+    
+    var currentProject: Project? = Project.demoProject()
+
 }
 
 extension Notification.Name {
@@ -52,12 +55,15 @@ extension Communicator: WCSessionDelegate {
     }
     
     func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
-        print("WCSession received message")
-        replyHandler([:])
+        print("WCSession received message \(message)")
+        if let newProjectId = message["newProject"] {
+            replyHandler(["send":newProjectId])
+
+        }
     }
     
     func session(_ session: WCSession, didReceive file: WCSessionFile) {
-        print("WCSession received file")
+        print("WCSession received file \(file)")
         if let data = try? Data(contentsOf: file.fileURL),
            let project = try? JSONDecoder().decode(Project.self, from: data) {
             print("WCSession got project")
@@ -71,6 +77,11 @@ extension Communicator: WCSessionDelegate {
             print("error! \(error)")
         }
     }
+    
+    func sessionCompanionAppInstalledDidChange(_ session: WCSession) {
+        print("companion app changed")
+    }
+    
     func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String : Any]) {
         print("WCSession received context \(applicationContext)")
     }
@@ -93,7 +104,7 @@ enum ReportType: String {
 
 extension Communicator {
     static func report(_ type: ReportType, message: String = "", replyHandler: (([String:Any]) -> Void)? = nil) {
-        shared.session.sendMessage([type.rawValue:message], replyHandler: {
+        shared.session.sendMessage([type.rawValue:message, "date": Date().timeIntervalSince1970], replyHandler: {
             if let handler = replyHandler {
                 handler($0)
             }

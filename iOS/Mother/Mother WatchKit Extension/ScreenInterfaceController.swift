@@ -47,6 +47,8 @@ class ScreenInterfaceController: WKInterfaceController {
     @IBOutlet weak var longPressGestureRecognizer: WKLongPressGestureRecognizer!
     @IBOutlet weak var downSwipeGestureRecognizer: WKSwipeGestureRecognizer!
 
+    var transitioningTo: Hotspot?
+    
     var screen: Screen? {
         didSet {
             image.setImage(screen?.hotspotImage)
@@ -72,11 +74,21 @@ class ScreenInterfaceController: WKInterfaceController {
     override func willActivate() {
         // This method is called when watch view controller is about to be visible to user
         super.willActivate()
+        
+        if let uuid = self.screen?.uuid {
+            Communicator.report(.present, message: uuid.uuidString)
+        }
     }
 
     override func didDeactivate() {
         // This method is called when watch view controller is no longer visible
         super.didDeactivate()
+        
+        if let hotspot = transitioningTo {
+            print("moving to hotspot \(hotspot)")
+        } else {
+            Communicator.report(.back)
+        }
     }
     
     func flashHotspots() {
@@ -98,9 +110,8 @@ class ScreenInterfaceController: WKInterfaceController {
         
         Communicator.report(.tap, message: point.description)
         
-        if let hotspot = screen?.hitTest(for: point) {
-            print("ping! \(hotspot)")
-            transition(to: hotspot)
+        if let hotspot = screen?.hitTest(for: point), hotspot.trigger == .tap {
+            transition(to: hotspot, in: Communicator.shared.currentProject!)
         } else {
             flashHotspots()
         }
@@ -127,18 +138,29 @@ class ScreenInterfaceController: WKInterfaceController {
         let scale: CGFloat = WKInterfaceDevice.current().screenScale
         let point =  sender.locationInObject().point(with: scale)
 
-        // TODO calculate time of press
         let typ: ReportType = sender.state == .ended ? .longPressEnded : .longPressRecognized
+        // TODO calculate time of press
         Communicator.report(typ, message: point.description)
+
+        if let hotspot = screen?.hitTest(for: point), hotspot.trigger == .longPress {
+            transitioningTo = hotspot
+            transition(to: hotspot, in: Communicator.shared.currentProject!)
+        } else {
+            flashHotspots()
+        }
     }
     
-    func transition(to hotspot: Hotspot) {
+    func transition(to hotspot: Hotspot, in project: Project) {
+        transitioningTo = hotspot
+        guard let screen = project.screen(with: hotspot.target) else {
+            NSLog("Error: no screen in project with ID \(hotspot.target.uuidString)")
+            return
+        }
         switch hotspot.transition {
         case .fromLeft:
-            pushController(withName: "screen", context: hotspot)
+            pushController(withName: "screen", context: screen)
             break
         case .fromRight:
-            Communicator.report(.present, message: hotspot.target.uuidString)
             pushController(withName: "screen", context: screen)
             break
         case .fromTop:
@@ -150,5 +172,10 @@ class ScreenInterfaceController: WKInterfaceController {
         case .instant:
             break
         }
+    }
+    
+    override func pop() {
+        super.pop()
+        print("pop")
     }
 }

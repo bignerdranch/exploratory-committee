@@ -9,6 +9,8 @@ import UIKit
 import WatchConnectivity
 
 class Communicator: NSObject {
+    var logEntries = [String]()
+    
     static var shared = Communicator()
 
     var session: WCSession!
@@ -80,7 +82,10 @@ extension Communicator: WCSessionDelegate {
         
     }
     func session(_ session: WCSession, didFinish fileTransfer: WCSessionFileTransfer, error: Error?) {
-        logMessage("file xfer complete")
+        let file = fileTransfer.file.fileURL
+        
+        logMessage("Finished sending file at \(file)")
+        try? FileManager.default.removeItem(at: file)
         if let error = error {
             logMessage("error! \(error)")
         }
@@ -92,7 +97,36 @@ extension Communicator: WCSessionDelegate {
  
     func logMessage(_ message: String) {
         print("WatchComm: \(message)")
+        logEntries.append(("WatchComm: \(message)"))
         log(message)
+    }
+    
+    func transmitProject(_ project: Project, completion: @escaping (Progress) -> Void) {
+        logMessage("Transmitting project")
+        session.sendMessage(["newProject":project.uuid.uuidString], replyHandler: { response in
+            if let uuid = response["send"] as? String,
+               uuid == project.uuid.uuidString {
+                completion(self.sendProjectAsFile(project))
+            }
+        }, errorHandler: { error in
+            self.logMessage("Received error \(error)")
+        })
+        
+    }
+
+    func sendProjectAsFile(_ project: Project) -> Progress {
+        logMessage("Transmitting project file")
+        let jsonData = try! JSONEncoder().encode(project)
+        let tempDir = session.watchDirectoryURL ?? URL(fileURLWithPath: NSTemporaryDirectory())
+        let file = URL(fileURLWithPath: tempDir.appendingPathComponent("\(UUID().uuidString).json").path)
+        print("\n\n\(jsonData.count) bytes\n\(file.absoluteURL)\n\n")
+        
+        try! jsonData.write(to: file.absoluteURL)
+        
+        logMessage("Sending file at \(file)")
+        let xfer = session.transferFile(file, metadata: nil)
+        
+        return xfer.progress
     }
 }
 

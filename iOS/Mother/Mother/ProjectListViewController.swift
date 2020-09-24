@@ -45,35 +45,22 @@ class ProjectListViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 //        super.tableView(tableView, didSelectRowAt: indexPath)
-        let project = projects[indexPath.row]
-        let progress = transmitProject(project)
-        
         let cell = tableView.cellForRow(at: indexPath)
-        let pView = UIProgressView(progressViewStyle: .bar)
-        cell?.accessoryView = pView
-        pView.observedProgress = progress
-    }
-    
-    func transmitProject(_ project: Project) -> Progress {
-        let session = WCSession.default
-        session.transferUserInfo(["currentProject":"\(project.uuid.uuidString)"])
-        
-        session.sendMessage(["newProject":project.uuid], replyHandler: { response in
-            print("\(response)")
-        }, errorHandler: { error in
-            print("\(error)")
+        let indicator = UIActivityIndicatorView()
+        cell?.accessoryView = indicator
+        indicator.startAnimating()
+
+        let project = projects[indexPath.row]
+        Communicator.shared.transmitProject(project, completion: { progress in
+            DispatchQueue.main.async {
+                let pView = UIProgressView(progressViewStyle: .bar)
+                cell?.accessoryView = pView
+                pView.observedProgress = progress
+            }
         })
         
-        let jsonData = try! JSONEncoder().encode(project)
-        
-        let tempDir = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
-        let file = tempDir.appendingPathComponent("\(UUID().uuidString).json")
-        try! jsonData.write(to: file)
-        
-        print("sending file")
-        let xfer = session.transferFile(file, metadata: nil)
-        return xfer.progress        
     }
+    
 
     /*
     // Override to support conditional editing of the table view.

@@ -27,7 +27,7 @@ class RootInterfaceController: WKInterfaceController {
     override func willActivate() {
         // This method is called when watch view controller is about to be visible to user
         print("pushing")
-        self.pushController(withName: "project", context: Project.demoProject())
+        self.pushController(withName: "project", context: Communicator.shared.currentProject)
 
     }
     
@@ -35,6 +35,10 @@ class RootInterfaceController: WKInterfaceController {
         // This method is called when watch view controller is no longer visible
 
 
+    }
+    override func pop() {
+        super.pop()
+        print("pop")
     }
 
 }

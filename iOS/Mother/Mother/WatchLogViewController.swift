@@ -13,6 +13,7 @@ class WatchLogViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        textView.text = Communicator.shared.logEntries.joined(separator: "\n")
         NotificationCenter.default.addObserver(forName: .watchLogEntry, object: nil, queue: .main) { [weak self] note in
             guard let self = self else { return }
             if let msg = note.object as? String {
