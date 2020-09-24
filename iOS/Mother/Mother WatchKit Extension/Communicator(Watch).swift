@@ -35,13 +35,6 @@ extension Communicator: WCSessionDelegate {
         print("WCSession activation state = \(activationState.rawValue)")
         if activationState == .activated {
             NotificationCenter.default.post(name: .sessionActivated, object: session)
-            try? session.sendMessage(["Hello":"Hello"], replyHandler: { response in
-                print("WCSession received response \(response)")
-
-            }, errorHandler: { error in
-                print("WCSession received error \(error)")
-            })
-            try? session.updateApplicationContext(["watch":"online"])
         }
     }
     
@@ -49,17 +42,18 @@ extension Communicator: WCSessionDelegate {
         print("WCSession reachability change: isReachable = \(session.isReachable)")
     }
     
-    func session(_ session: WCSession, didReceiveMessageData messageData: Data) {
+    func session(_ session: WCSession, didReceiveMessageData messageData: Data, replyHandler: @escaping (Data) -> Void) {
+        print("WCSession received message data")
         if let project = try? JSONDecoder().decode(Project.self, from: messageData) {
             print("WCSession got project")
             NotificationCenter.default.post(name: .newProjectReceived, object: project)
         }
-    }
-    func session(_ session: WCSession, didReceiveMessageData messageData: Data, replyHandler: @escaping (Data) -> Void) {
         replyHandler(Data())
     }
+    
     func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
-        replyHandler(message)
+        print("WCSession received message")
+        replyHandler([:])
     }
     
     func session(_ session: WCSession, didReceive file: WCSessionFile) {
@@ -72,9 +66,37 @@ extension Communicator: WCSessionDelegate {
     }
         
     func session(_ session: WCSession, didFinish fileTransfer: WCSessionFileTransfer, error: Error?) {
-        print("xfer")
+        print("WCSession finished transfer \(fileTransfer)")
         if let error = error {
             print("error! \(error)")
         }
+    }
+    func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String : Any]) {
+        print("WCSession received context \(applicationContext)")
+    }
+    func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
+        print("WCSession received userInfo \(userInfo)")
+    }
+    
+    func session(_ session: WCSession, didFinish userInfoTransfer: WCSessionUserInfoTransfer, error: Error?) {
+        print("WCSession finished xferring userInfo \(userInfoTransfer.userInfo)")
+    }
+}
+
+enum ReportType: String {
+    case tap
+    case longPressRecognized
+    case longPressEnded
+    case back
+    case present
+}
+
+extension Communicator {
+    static func report(_ type: ReportType, message: String = "", replyHandler: (([String:Any]) -> Void)? = nil) {
+        shared.session.sendMessage([type.rawValue:message], replyHandler: {
+            if let handler = replyHandler {
+                handler($0)
+            }
+        }, errorHandler: { print("WCSession error \($0)") })
     }
 }

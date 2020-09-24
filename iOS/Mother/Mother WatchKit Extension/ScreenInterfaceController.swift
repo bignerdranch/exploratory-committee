@@ -7,6 +7,7 @@
 
 import WatchKit
 import Foundation
+import WatchConnectivity
 
 extension CGPoint {
     func point(with scale: CGFloat) -> Point {
@@ -20,7 +21,11 @@ extension Rect {
             point.y > origin.y && point.y < (origin.y + size.height)
     }
 }
-
+extension Point: CustomStringConvertible {
+    var description: String {
+        return "(\(x), \(y))"
+    }
+}
 extension Screen {
     func hitTest(for point: Point) -> Hotspot? {
         for hotspot in hotspots {
@@ -90,6 +95,9 @@ class ScreenInterfaceController: WKInterfaceController {
         let scale: CGFloat = WKInterfaceDevice.current().screenScale
         let point =  sender.locationInObject().point(with: scale)
         print("tap \(point)")
+        
+        Communicator.report(.tap, message: point.description)
+        
         if let hotspot = screen?.hitTest(for: point) {
             print("ping! \(hotspot)")
             transition(to: hotspot)
@@ -114,8 +122,14 @@ class ScreenInterfaceController: WKInterfaceController {
         print("swipe")
 
     }
+
     @IBAction func didLongPress(_ sender: WKLongPressGestureRecognizer) {
-        print("longpress")
+        let scale: CGFloat = WKInterfaceDevice.current().screenScale
+        let point =  sender.locationInObject().point(with: scale)
+
+        // TODO calculate time of press
+        let typ: ReportType = sender.state == .ended ? .longPressEnded : .longPressRecognized
+        Communicator.report(typ, message: point.description)
     }
     
     func transition(to hotspot: Hotspot) {
@@ -124,6 +138,7 @@ class ScreenInterfaceController: WKInterfaceController {
             pushController(withName: "screen", context: hotspot)
             break
         case .fromRight:
+            Communicator.report(.present, message: hotspot.target.uuidString)
             pushController(withName: "screen", context: screen)
             break
         case .fromTop:

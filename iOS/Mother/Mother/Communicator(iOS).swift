@@ -19,6 +19,10 @@ class Communicator: NSObject {
         session.delegate = self
         session.activate()
     }
+    
+    func log(_ message: String) {
+        NotificationCenter.default.post(name: .watchLogEntry, object: message)
+    }
 }
 
 extension Notification.Name {
@@ -26,33 +30,35 @@ extension Notification.Name {
     static var sessionActivated = Notification.Name("sessionActivated")
     static var sessionInactive = Notification.Name("sessionInactive")
     static var sessionDeactivated = Notification.Name("sessionDeactivated")
+
+    static var watchLogEntry = Notification.Name("watchLogEntry")
 }
 
 extension Communicator: WCSessionDelegate {
     func sessionDidBecomeInactive(_ session: WCSession) {
         NotificationCenter.default.post(name: .sessionInactive, object: session)
-        print("WCSession did become inactive")
+        logMessage("WCSession did become inactive")
 
     }
     
     func sessionDidDeactivate(_ session: WCSession) {
         NotificationCenter.default.post(name: .sessionDeactivated, object: session)
-        print("WCSession did deactivate")
+        logMessage("WCSession did deactivate")
     }
     
     func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         if let error = error {
-            print("WCSession error \(error)")
+            logMessage("WCSession error \(error)")
         }
-        print("WCSession activation state = \(activationState.rawValue)")
+        logMessage("WCSession activation state = \(activationState.rawValue)")
         if activationState == .activated {
             if !session.isPaired {
-                print("WCSession not paired")
+                logMessage("WCSession not paired")
             } else if session.isWatchAppInstalled {
-                print("WCSession found the watch app")
+                logMessage("WCSession found the watch app")
                 NotificationCenter.default.post(name: .sessionActivated, object: session)
             } else {
-                print("WCSession did not find a watch app")
+                logMessage("WCSession did not find a watch app")
             }
             
         }
@@ -60,26 +66,33 @@ extension Communicator: WCSessionDelegate {
     }
     
     func sessionReachabilityDidChange(_ session: WCSession) {
-        print("reeeaaach \(session.isReachable)")
+        logMessage("Reachability changed: \(session.isReachable)")
     }
     
     func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
+        logMessage("Received message \(message.description)")
         replyHandler(message)
     }
 
     func session(_ session: WCSession, didReceiveMessageData messageData: Data, replyHandler: @escaping (Data) -> Void) {
+        logMessage("Received messageData, \(messageData.count) bytes")
         replyHandler(Data())
+        
     }
     func session(_ session: WCSession, didFinish fileTransfer: WCSessionFileTransfer, error: Error?) {
-        print("file xfer complete")
+        logMessage("file xfer complete")
         if let error = error {
-            print("error! \(error)")
+            logMessage("error! \(error)")
         }
     }
     
     func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String : Any]) {
-        print("Watchkit context: \n\(applicationContext)")
+        logMessage("Watchkit context: \n\(applicationContext)")
     }
-    
+ 
+    func logMessage(_ message: String) {
+        print("WatchComm: \(message)")
+        log(message)
+    }
 }
 

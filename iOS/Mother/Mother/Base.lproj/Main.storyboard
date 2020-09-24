@@ -1,13 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Bny-BW-nSz">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="4po-fK-oVs">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
+        <!--Navigation Controller-->
+        <scene sceneID="PZd-bA-1bV">
+            <objects>
+                <navigationController id="4po-fK-oVs" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="7mb-9U-IbH">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="Bny-BW-nSz" kind="relationship" relationship="rootViewController" id="exG-SQ-7oL"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="4EM-P2-sbj" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-990" y="55"/>
+        </scene>
         <!--Project List View Controller-->
         <scene sceneID="Zin-0V-kTO">
             <objects>
@@ -16,28 +33,62 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="SYe-mt-wWv">
-                                <rect key="frame" x="0.0" y="28" width="414" height="43.5"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="SYe-mt-wWv" id="G4r-c3-kAH">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
                         <connections>
                             <outlet property="dataSource" destination="Bny-BW-nSz" id="MLI-au-OOl"/>
                             <outlet property="delegate" destination="Bny-BW-nSz" id="y7K-Hp-JNH"/>
                         </connections>
                     </tableView>
+                    <navigationItem key="navigationItem" id="Qc9-pU-9Bn">
+                        <barButtonItem key="rightBarButtonItem" title="Log" id="mqF-kg-BMp">
+                            <connections>
+                                <segue destination="gm4-Ip-Q5F" kind="show" id="XKm-am-Fdh"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dI9-Ud-bcs" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="894" y="21"/>
+            <point key="canvasLocation" x="-71" y="55"/>
+        </scene>
+        <!--Watch Comm Log-->
+        <scene sceneID="MhP-2J-s7Z">
+            <objects>
+                <viewController id="gm4-Ip-Q5F" customClass="WatchLogViewController" customModule="Geoffrey" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="gTi-hG-IsD">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="Log" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="bjD-nF-Rbx">
+                                <rect key="frame" x="0.0" y="88" width="414" height="774"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <color key="textColor" systemColor="labelColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="B7i-Bm-Pg8"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="B7i-Bm-Pg8" firstAttribute="bottom" secondItem="bjD-nF-Rbx" secondAttribute="bottom" id="LMG-zx-hjU"/>
+                            <constraint firstItem="bjD-nF-Rbx" firstAttribute="leading" secondItem="B7i-Bm-Pg8" secondAttribute="leading" id="XxW-Ud-PC2"/>
+                            <constraint firstItem="B7i-Bm-Pg8" firstAttribute="trailing" secondItem="bjD-nF-Rbx" secondAttribute="trailing" id="k1w-cx-UhM"/>
+                            <constraint firstItem="bjD-nF-Rbx" firstAttribute="top" secondItem="B7i-Bm-Pg8" secondAttribute="top" id="tcy-4D-m7W"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Watch Comm Log" id="QXV-Dl-cdq"/>
+                    <connections>
+                        <outlet property="textView" destination="bjD-nF-Rbx" id="SKt-Mh-fGp"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="vgd-cN-gbM" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="948" y="55"/>
         </scene>
     </scenes>
     <resources>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

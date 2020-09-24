@@ -45,9 +45,25 @@ class ProjectListViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 //        super.tableView(tableView, didSelectRowAt: indexPath)
-        
         let project = projects[indexPath.row]
+        let progress = transmitProject(project)
+        
+        let cell = tableView.cellForRow(at: indexPath)
+        let pView = UIProgressView(progressViewStyle: .bar)
+        cell?.accessoryView = pView
+        pView.observedProgress = progress
+    }
+    
+    func transmitProject(_ project: Project) -> Progress {
         let session = WCSession.default
+        session.transferUserInfo(["currentProject":"\(project.uuid.uuidString)"])
+        
+        session.sendMessage(["newProject":project.uuid], replyHandler: { response in
+            print("\(response)")
+        }, errorHandler: { error in
+            print("\(error)")
+        })
+        
         let jsonData = try! JSONEncoder().encode(project)
         
         let tempDir = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
@@ -56,12 +72,7 @@ class ProjectListViewController: UITableViewController {
         
         print("sending file")
         let xfer = session.transferFile(file, metadata: nil)
-        let progress = xfer.progress
-        let cell = tableView.cellForRow(at: indexPath)
-        let pView = UIProgressView(progressViewStyle: .bar)
-        cell?.accessoryView = pView
-        pView.observedProgress = progress
-        
+        return xfer.progress        
     }
 
     /*

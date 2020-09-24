@@ -20,9 +20,7 @@ class RootInterfaceController: WKInterfaceController {
                 self.pushController(withName: "screen", context: prj)
             }
         }
-        NotificationCenter.default.addObserver(forName: .sessionActivated, object: nil, queue: .main) { note in
-            session?.sendMessage(["Hello":"Hello"], replyHandler: { _ in }, errorHandler: { print("Error! \($0)") })
-        }
+
         print("Observer added.")
     }
     
