@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Header @screens="setScreens" @hotspot="setHotspot"/>
-    <Project :screens="screens" :hotspot="hotspot"/>
+    <Header @screens="setScreens" @hotspot="setHotspot" :finished="finished"/>
+    <Project :screens="screens" :hotspot="hotspot" @finished-drawing="setFinished"/>
   </div>
 </template>
 
@@ -15,7 +15,8 @@ export default {
   },
  data: () => ({
    screens: [],
-   hotspot: false,
+   hotspot: 0,
+   finished: 0,
   }),
   methods: {
     setScreens(screens) {
@@ -24,6 +25,9 @@ export default {
     setHotspot(val) {
       this.hotspot = val;
     },
+    setFinished(val) {
+      this.finished = val;
+    }
   }
 }
 </script>

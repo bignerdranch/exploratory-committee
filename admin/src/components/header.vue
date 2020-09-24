@@ -20,7 +20,7 @@
       <span class="md-title">{ my project }</span>     
     </md-toolbar>
 
-    <md-dialog :md-active.sync="showDialog">
+    <md-dialog :md-active.sync="showImageDialog">
       <md-dialog-title>Upload Screens</md-dialog-title>
       <form enctype="multipart/form-data" novalidate>
         <input 
@@ -32,9 +32,26 @@
           class="input-file">
       </form>
       <md-dialog-actions>
-        <md-button class="md-primary" @click="showDialog = false">CLOSE</md-button>
+        <md-button class="md-primary" @click="showImageDialog = false">CLOSE</md-button>
         <md-button class="md-primary" @click="saveFiles">UPLOAD</md-button>
       </md-dialog-actions>
+    </md-dialog>
+
+    <md-dialog :md-active.sync="showAddProjectDialog">
+      <md-dialog-title>Add Project</md-dialog-title>
+      <form novalidate class="md-layout" @submit.prevent="addProject">
+          <md-card class="md-layout-item md-size-50 md-small-size-100">
+            <md-card-content>
+                <md-field>
+                    <md-input name="add-project-name" id="add-project-name" autocomplete="given-name" v-model="newProjectName"/>
+                  </md-field>
+              <md-dialog-actions>
+                <md-button class="md-primary" @click="showAddProjectDialog = false">CLOSE</md-button>
+                <md-button class="md-primary" type="submit">SAVE</md-button>
+              </md-dialog-actions>
+              </md-card-content>
+          </md-card>
+      </form>
     </md-dialog>
 
     <md-drawer :md-active.sync="showNavigation" md-swipeable>
@@ -42,19 +59,19 @@
         <span class="sm-title">YOUR PROJECTS</span>
       </md-toolbar>
       <md-list>
-        <md-list-item @click="addProject()">
-          <md-icon>add_circle_outline</md-icon>
-          <span class="md-list-item-text">Add New Project</span>
+        <md-list-item @click="showAddProjectDialog = true">
+            <md-icon>add_circle_outline</md-icon>
+            <span class="md-list-item-text">Add New Project</span>
         </md-list-item>
         <md-divider></md-divider>
       <!-- SIDE MENU OPEN -->
         <md-list-item>
-          <md-icon>move_to_inbox</md-icon>
+          <md-icon>watch</md-icon>
           <span class="md-list-item-text">project 1</span>
         </md-list-item>
 
         <md-list-item>
-          <md-icon>send</md-icon>
+          <md-icon>watch</md-icon>
           <span class="md-list-item-text">projcet 2</span>
         </md-list-item>
 
@@ -66,26 +83,40 @@
 <script>
 export default {
   name: 'Header',
+   props: {
+    finished: {
+      default: 0,
+      type: Number,
+    },
+  },
   data: () => ({
-    showDialog: false,
+    showImageDialog: false,
+    showAddProjectDialog: false,
+    newProjectName: '',
     multiple: null,
     base64ImageList: [],
     showNavigation: false,
     showSidepanel: false,
+    numHotspot: 0,
   }),
+   watch: {
+    finished() {
+      console.log('finished recived');
+    },
+  },
   methods: {
     setShowDialog() {
-      console.log('show dialog clicked');
-      this.showDialog = true;
+      this.showImageDialog = true;
     },
     AddHotspot() {
-      this.$emit('hotspot', true);
+      this.numHotspot++;
+      this.$emit('hotspot', this.numHotspot)
     },
     refresh() {
       // TODO: fetch new information
     },
     saveFiles() {
-      this.showDialog = false;
+      this.showImageDialog = false;
       this.$emit('screens', this.base64ImageList)
     },
     handleImages(files) {
@@ -97,6 +128,11 @@ export default {
       reader.onload = e =>{
           this.base64ImageList.push(e.target.result);
       };
+    },
+    addProject() {
+      console.log('submit new project', this.newProjectName);
+      this.showAddProjectDialog = false;
+      this.newProjectName = '';
     },
   }
 }
