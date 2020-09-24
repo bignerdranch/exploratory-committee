@@ -126,13 +126,19 @@ export default {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = e =>{
-          this.base64ImageList.push(e.target.result);
+          this.base64ImageList.push({ file: e.target.result, name: file.name, uuid: this.uuidv4() });
       };
     },
     addProject() {
       console.log('submit new project', this.newProjectName);
       this.showAddProjectDialog = false;
       this.newProjectName = '';
+    },
+    uuidv4() {
+       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) =>  {
+        const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
     },
   }
 }
