@@ -1,14 +1,24 @@
 <template>
-  <div class="header-wrapper">
-    <ul>
-      <li class="title"> MOTHER </li>
-      <li><button @click="showDialog = true">+ Add Screens</button> </li>
-      <li class="hotspot-wrapper"><button @click="AddHotspot()">Add Hotspot <span class="hotspot"></span></button> </li>
-    </ul>
+  <div class="page-container">
+    <md-toolbar class="md-primary">
+      <md-button class="md-icon-button" @click="showNavigation = true">
+        <md-icon>menu</md-icon>
+      </md-button>
+      
+      <md-button class="md-icon-button" @click="setShowDialog()">
+        <md-icon>add_circle_outline</md-icon>
+      </md-button>
 
-    <span class="project-title">{ Project Title }</span>
+      <md-button class="md-icon-button" @click="AddHotspot()">
+        <md-icon>aspect_ratio</md-icon>
+      </md-button>
 
-    <router-link :to="{ name: 'projects'}">All Projects</router-link>
+      <md-button class="md-icon-button" @click="refresh()">
+        <md-icon>refresh</md-icon>
+      </md-button>
+
+      <span class="md-title">{ my project }</span>     
+    </md-toolbar>
 
     <md-dialog :md-active.sync="showDialog">
       <md-dialog-title>Upload Screens</md-dialog-title>
@@ -26,6 +36,30 @@
         <md-button class="md-primary" @click="saveFiles">UPLOAD</md-button>
       </md-dialog-actions>
     </md-dialog>
+
+    <md-drawer :md-active.sync="showNavigation" md-swipeable>
+      <md-toolbar class="md-transparent" md-elevation="0">
+        <span class="sm-title">YOUR PROJECTS</span>
+      </md-toolbar>
+      <md-list>
+        <md-list-item @click="addProject()">
+          <md-icon>add_circle_outline</md-icon>
+          <span class="md-list-item-text">Add New Project</span>
+        </md-list-item>
+        <md-divider></md-divider>
+      <!-- SIDE MENU OPEN -->
+        <md-list-item>
+          <md-icon>move_to_inbox</md-icon>
+          <span class="md-list-item-text">project 1</span>
+        </md-list-item>
+
+        <md-list-item>
+          <md-icon>send</md-icon>
+          <span class="md-list-item-text">projcet 2</span>
+        </md-list-item>
+
+      </md-list>
+    </md-drawer>
   </div>
 </template>
 
@@ -36,10 +70,19 @@ export default {
     showDialog: false,
     multiple: null,
     base64ImageList: [],
+    showNavigation: false,
+    showSidepanel: false,
   }),
   methods: {
+    setShowDialog() {
+      console.log('show dialog clicked');
+      this.showDialog = true;
+    },
     AddHotspot() {
       this.$emit('hotspot', true);
+    },
+    refresh() {
+      // TODO: fetch new information
     },
     saveFiles() {
       this.showDialog = false;
@@ -60,67 +103,21 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.header-wrapper {
-  padding-bottom: 40px;
-  border-bottom: 1px black solid;
-  justify-content: space-between;
-}
+.md-toolbar.md-theme-default.md-primary {
+  background-color: rgb(46, 46, 46);
 
-.header-wrapper, ul {
-  display: flex;
-  font-weight: bold;
-}
-
-ul {
-  list-style: none;
-  margin: 0;
-  
-  li {
-    margin-right: 20px;
-
-    button {
-      font-weight: bold;
-    }
-  }
-
- .title {
-    border: 1px solid grey;
-    padding: 2px 20px;
-    margin-top: -2px;
-  }
-
-  li > button, button:visited, button:hover, button:active, button:focus {
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    outline: none;
-  }
-
-  .hotspot-wrapper {
-    width: 150px;
-    
-    button {
-      white-space: nowrap;
-      cursor: pointer;
-    }
-
-    .hotspot {
-      padding: 5px 15px;
-      margin-left: 10px;
-      background-color: rgb(175,238,238);
-      border: 1px solid grey;
-    }
+  .md-title {
+    flex: 1;
   }
 }
 
-.project-title {
-  margin-left: -300px;
+.add-project.md-button {
+  width: 80%;
+  text-align: left;
 }
 
-a {
-  color: inherit;
-  text-decoration: inherit;
-  padding-right: 10px;
+.add-project-icon {
+  margin: 10px;
 }
 
 .md-dialog /deep/.md-dialog-container {
