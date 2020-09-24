@@ -5,7 +5,7 @@
 //  Created by Steve Sparks on 9/23/20.
 //
 
-import Foundation
+import UIKit
 
 enum Transition: String, Codable {
     case fromLeft, fromRight, fromTop, fromBottom
@@ -42,6 +42,23 @@ struct Project: Codable {
     let uuid: UUID
     let name: String
     let screens: [Screen]
+}
+
+extension Project {
+    static func demoProject() -> Project {
+        guard let img = UIImage(named: "pixo"), let data = img.pngData() else { preconditionFailure("this wasn't supposed to end this way") }
+        let sq1uuid = UUID()
+        let sq2 = Screen(uuid: UUID(), imageData: data, hotspots: [
+            Hotspot(rect: Rect(origin: Point(x: 20, y: 80), size: Size(width: 100, height: 270)), target: sq1uuid, transition: .fromLeft, trigger: .tap),
+            Hotspot(rect: Rect(origin: Point(x: 0, y: 300), size: Size(width: 100, height: 100)), target: sq1uuid, transition: .fromLeft, trigger: .tap)
+        ])
+        let sq1 = Screen(uuid: sq1uuid, imageData: data, hotspots: [
+            Hotspot(rect: Rect(origin: Point(x: 40, y: 80), size: Size(width: 300, height: 100)), target: sq2.uuid, transition: .fromRight, trigger: .tap),
+            Hotspot(rect: Rect(origin: Point(x: 40, y: 1050), size: Size(width: 300, height: 100)), target: sq2.uuid, transition: .fromRight, trigger: .tap)
+        ])
+        let project = Project(uuid: UUID(), name: "My Project", screens: [sq1, sq2])
+        return project
+    }
 }
 
 

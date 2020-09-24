@@ -6,10 +6,18 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="17034"/>
     </dependencies>
     <scenes>
-        <!--Interface Controller-->
+        <!--root-->
         <scene sceneID="aou-V4-d1y">
             <objects>
-                <controller id="AgC-eL-Hgc" customClass="InterfaceController" customModule="Mother_WatchKit_App" customModuleProvider="target"/>
+                <controller identifier="root" id="AgC-eL-Hgc" customClass="RootInterfaceController" customModule="Mother_WatchKit_App" customModuleProvider="target">
+                    <items>
+                        <group width="1" alignment="left" layout="vertical" id="fp1-vf-vYu">
+                            <items>
+                                <label width="1" alignment="left" text="Launch the parent app on your phone to control me." textAlignment="center" numberOfLines="0" minimumScaleFactor="0.80000000000000004" id="gws-8Q-9FI"/>
+                            </items>
+                        </group>
+                    </items>
+                </controller>
             </objects>
             <point key="canvasLocation" x="287" y="50"/>
         </scene>
@@ -18,19 +26,47 @@
             <objects>
                 <controller identifier="screen" id="udJ-pR-1m4" customClass="ScreenInterfaceController" customModule="Mother_WatchKit_Extension">
                     <items>
-                        <imageView alignment="left" id="mdF-Cn-6gi">
+                        <group width="1" alignment="left" layout="vertical" id="IHW-mD-zmU">
+                            <items>
+                                <imageView alignment="left" id="mdF-Cn-6gi"/>
+                            </items>
                             <gestureRecognizers>
-                                <tapGestureRecognizer id="KT3-fX-2UB"/>
-                                <swipeGestureRecognizer id="Hpm-Aa-a4C"/>
-                                <swipeGestureRecognizer direction="2" id="Vuo-D4-YU5"/>
-                                <swipeGestureRecognizer direction="4" id="O0C-4u-wc0"/>
-                                <swipeGestureRecognizer direction="8" id="K0G-iM-SvR"/>
-                                <longPressGestureRecognizer id="RXF-a4-nXz"/>
+                                <tapGestureRecognizer id="KT3-fX-2UB">
+                                    <connections>
+                                        <action selector="didTap:" destination="udJ-pR-1m4" id="QmN-pf-tEL"/>
+                                    </connections>
+                                </tapGestureRecognizer>
+                                <swipeGestureRecognizer id="Hpm-Aa-a4C">
+                                    <connections>
+                                        <action selector="didSwipeRight:" destination="udJ-pR-1m4" id="TG7-2g-qWt"/>
+                                    </connections>
+                                </swipeGestureRecognizer>
+                                <swipeGestureRecognizer direction="2" id="Vuo-D4-YU5">
+                                    <connections>
+                                        <action selector="didSwipeLeft:" destination="udJ-pR-1m4" id="mz5-wI-rZD"/>
+                                    </connections>
+                                </swipeGestureRecognizer>
+                                <swipeGestureRecognizer direction="4" id="O0C-4u-wc0">
+                                    <connections>
+                                        <action selector="didSwipeUp:" destination="udJ-pR-1m4" id="RxR-DN-ZnD"/>
+                                    </connections>
+                                </swipeGestureRecognizer>
+                                <swipeGestureRecognizer direction="8" id="K0G-iM-SvR">
+                                    <connections>
+                                        <action selector="didSwipeDown:" destination="udJ-pR-1m4" id="INf-Js-d0g"/>
+                                    </connections>
+                                </swipeGestureRecognizer>
+                                <longPressGestureRecognizer id="RXF-a4-nXz">
+                                    <connections>
+                                        <action selector="didLongPress:" destination="udJ-pR-1m4" id="Fck-dk-RY0"/>
+                                    </connections>
+                                </longPressGestureRecognizer>
                             </gestureRecognizers>
-                        </imageView>
+                        </group>
                     </items>
                     <connections>
                         <outlet property="downSwipeGestureRecognizer" destination="K0G-iM-SvR" id="wb6-9g-sha"/>
+                        <outlet property="group" destination="IHW-mD-zmU" id="6OH-aN-nc4"/>
                         <outlet property="image" destination="mdF-Cn-6gi" id="dal-Z6-fTK"/>
                         <outlet property="leftSwipeGestureRecognizer" destination="Vuo-D4-YU5" id="2ft-1H-rUD"/>
                         <outlet property="longPressGestureRecognizer" destination="RXF-a4-nXz" id="Wxr-ty-nxg"/>

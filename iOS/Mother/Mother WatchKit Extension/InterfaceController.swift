@@ -9,7 +9,7 @@ import WatchKit
 import Foundation
 
 
-class InterfaceController: WKInterfaceController {
+class RootInterfaceController: WKInterfaceController {
 
     override func awake(withContext context: Any?) {
         // Configure interface objects here.
@@ -17,6 +17,8 @@ class InterfaceController: WKInterfaceController {
     
     override func willActivate() {
         // This method is called when watch view controller is about to be visible to user
+        
+        pushController(withName: "screen", context: Project.demoProject().screens.first!)
     }
     
     override func didDeactivate() {
@@ -25,14 +27,3 @@ class InterfaceController: WKInterfaceController {
 
 }
 
-class ScreenInterfaceController: WKInterfaceController {
-    @IBOutlet weak var image: WKInterfaceImage!
-    @IBOutlet weak var tapGestureRecognizer: WKTapGestureRecognizer!
-    @IBOutlet weak var rightSwipeGestureRecognizer: WKSwipeGestureRecognizer!
-    @IBOutlet weak var upSwipeGestureRecognizer: WKSwipeGestureRecognizer!
-    @IBOutlet weak var leftSwipeGestureRecognizer: WKSwipeGestureRecognizer!
-    @IBOutlet weak var longPressGestureRecognizer: WKLongPressGestureRecognizer!    
-    @IBOutlet weak var downSwipeGestureRecognizer: WKSwipeGestureRecognizer!
-    
-    
-}
