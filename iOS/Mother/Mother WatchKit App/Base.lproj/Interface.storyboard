@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder.WatchKit.Storyboard" version="3.0" toolsVersion="17156" targetRuntime="watchKit" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="AgC-eL-Hgc">
+    <device id="watch38"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="17034"/>
+    </dependencies>
+    <scenes>
+        <!--Interface Controller-->
+        <scene sceneID="aou-V4-d1y">
+            <objects>
+                <controller id="AgC-eL-Hgc" customClass="InterfaceController" customModule="Mother_WatchKit_App" customModuleProvider="target"/>
+            </objects>
+            <point key="canvasLocation" x="287" y="50"/>
+        </scene>
+        <!--screen-->
+        <scene sceneID="1Kg-vT-dfQ">
+            <objects>
+                <controller identifier="screen" id="udJ-pR-1m4" customClass="ScreenInterfaceController" customModule="Mother_WatchKit_Extension">
+                    <items>
+                        <imageView alignment="left" id="mdF-Cn-6gi">
+                            <gestureRecognizers>
+                                <tapGestureRecognizer id="KT3-fX-2UB"/>
+                                <swipeGestureRecognizer id="Hpm-Aa-a4C"/>
+                                <swipeGestureRecognizer direction="2" id="Vuo-D4-YU5"/>
+                                <swipeGestureRecognizer direction="4" id="O0C-4u-wc0"/>
+                                <swipeGestureRecognizer direction="8" id="K0G-iM-SvR"/>
+                                <longPressGestureRecognizer id="RXF-a4-nXz"/>
+                            </gestureRecognizers>
+                        </imageView>
+                    </items>
+                    <connections>
+                        <outlet property="downSwipeGestureRecognizer" destination="K0G-iM-SvR" id="wb6-9g-sha"/>
+                        <outlet property="image" destination="mdF-Cn-6gi" id="dal-Z6-fTK"/>
+                        <outlet property="leftSwipeGestureRecognizer" destination="Vuo-D4-YU5" id="2ft-1H-rUD"/>
+                        <outlet property="longPressGestureRecognizer" destination="RXF-a4-nXz" id="Wxr-ty-nxg"/>
+                        <outlet property="rightSwipeGestureRecognizer" destination="Hpm-Aa-a4C" id="MSL-fv-xGZ"/>
+                        <outlet property="tapGestureRecognizer" destination="KT3-fX-2UB" id="eS6-ac-xPA"/>
+                        <outlet property="upSwipeGestureRecognizer" destination="O0C-4u-wc0" id="7Tg-Kg-lE2"/>
+                    </connections>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="607" y="50"/>
+        </scene>
+    </scenes>
+</document>
