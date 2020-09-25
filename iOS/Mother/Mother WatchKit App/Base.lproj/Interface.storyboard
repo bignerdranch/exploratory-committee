@@ -17,7 +17,11 @@
                                 <label width="1" alignment="left" text="Launch the parent app on your phone to control me." textAlignment="center" numberOfLines="0" minimumScaleFactor="0.80000000000000004" id="gws-8Q-9FI"/>
                             </items>
                         </group>
+                        <imageView alignment="left" id="l40-P6-nBR"/>
                     </items>
+                    <connections>
+                        <outlet property="imageView" destination="l40-P6-nBR" id="WbY-1H-ptl"/>
+                    </connections>
                 </controller>
             </objects>
             <point key="canvasLocation" x="287" y="50"/>

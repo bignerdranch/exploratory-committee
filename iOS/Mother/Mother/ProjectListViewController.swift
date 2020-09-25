@@ -61,8 +61,31 @@ class ProjectListViewController: UITableViewController {
         
         cell.textLabel?.text = project.name
         // Configure the cell...
-
+        let btn = UIButton.systemButton(with: UIImage(systemName:"square.and.arrow.up")!, target: self, action: #selector(sendToWatch(_:)))
+        btn.addTarget(self, action: #selector(sendToWatch(_:)), for: .touchUpInside)
+        btn.tag = indexPath.row
+        cell.accessoryView = btn
         return cell
+    }
+        
+    @IBAction func sendToWatch(_ sender: UIButton) {
+        let project = projects[sender.tag]
+        let alert = UIAlertController(title: "Send to Watch", message: "Are you sure you want the watch to display this project?", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Send to Watch", style: .default, handler: { _ in
+            self.reallySendToWatch(project)
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { _ in
+            
+        }))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func reallySendToWatch(_ prj: Project) {
+        Communicator.shared.transmitProject(prj) { _ in
+            DispatchQueue.main.async {
+                self.navigationController?.popViewController(animated: true)
+            }
+        }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

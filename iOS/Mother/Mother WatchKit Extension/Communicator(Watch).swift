@@ -25,6 +25,7 @@ class Communicator: NSObject {
 }
 
 extension Notification.Name {
+    static var newProjectComing = Notification.Name("newProjectComing")
     static var newProjectReceived = Notification.Name("newProjectReceived")
     static var sessionActivated = Notification.Name("sessionActivated")
 }
@@ -56,7 +57,10 @@ extension Communicator: WCSessionDelegate {
     
     func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
         print("WCSession received message \(message)")
-        if let newProjectId = message["newProject"],
+        if let reset = message["reset"] as? String, reset == "yes" {
+            NotificationCenter.default.post(name: .newProjectComing, object: self)
+            replyHandler(["ok":"ok"])
+        } else if let newProjectId = message["newProject"],
            let data = message["jsonData"] as? Data {
             let project = try! JSONDecoder().decode(Project.self, from: data) 
             replyHandler(["ack":newProjectId])

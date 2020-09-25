@@ -56,6 +56,8 @@ extension Communicator: WCSessionDelegate {
         if activationState == .activated {
             if !session.isPaired {
                 logMessage("WCSession not paired")
+            } else if !session.isReachable {
+                logMessage("WCSession is not reachable")
             } else if session.isWatchAppInstalled {
                 logMessage("WCSession found the watch app")
                 NotificationCenter.default.post(name: .sessionActivated, object: session)
@@ -102,6 +104,11 @@ extension Communicator: WCSessionDelegate {
     }
     
     func transmitProject(_ project: Project, completion: @escaping (Progress) -> Void) {
+        guard session.isReachable else {
+            logMessage("Session says not reachable.")
+            return
+        }
+        
         logMessage("Transmitting project")
         
         let jsonData = try! JSONEncoder().encode(project)
@@ -110,11 +117,17 @@ extension Communicator: WCSessionDelegate {
             "projectUrl": project.url?.absoluteString ?? "",
             "jsonData": jsonData
         ]
-        
-        session.sendMessage(dataPayload, replyHandler: { response in
+        print("send reset")
+        session.sendMessage(["reset":"yes"], replyHandler: { response in
+            print("send payload")
+            self.session.sendMessage(dataPayload, replyHandler: { response in
+            }, errorHandler: { error in
+                self.logMessage("Received error \(error)")
+            })
         }, errorHandler: { error in
             self.logMessage("Received error \(error)")
         })
+
         
     }
 
