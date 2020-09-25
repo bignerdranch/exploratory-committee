@@ -13,6 +13,10 @@ class ProjectListViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let refresh = UIRefreshControl()
+        refresh.addTarget(self, action: #selector(didRequestRefresh(_:)), for: .valueChanged)
+        tableView.refreshControl = refresh
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -21,6 +25,20 @@ class ProjectListViewController: UITableViewController {
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
 
+    @objc @IBAction func didRequestRefresh(_ sender: Any) {
+        print("refresh")
+        ProjectStore.shared.refresh { projects, error in
+            if let error = error {
+                print("Error! \(error)")
+            } else if !projects.isEmpty {
+                DispatchQueue.main.async {
+                    self.projects = projects
+                    self.tableView.reloadData()
+                    self.tableView.refreshControl?.endRefreshing()
+                }
+            }
+        }
+    }
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {

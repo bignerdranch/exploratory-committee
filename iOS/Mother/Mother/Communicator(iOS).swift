@@ -105,13 +105,13 @@ extension Communicator: WCSessionDelegate {
         logMessage("Transmitting project")
         
         let dataPayload: [String:Any] = [
-            "newProject": project.uuid.uuidString,
+            "newProject": project._id,
             "projectUrl": project.url
         ]
         
         session.sendMessage(dataPayload, replyHandler: { response in
             if let uuid = response["send"] as? String,
-               uuid == project.uuid.uuidString {
+               uuid == project._id {
                 completion(self.sendProjectAsFile(project))
             }
         }, errorHandler: { error in

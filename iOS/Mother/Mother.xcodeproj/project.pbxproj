@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0E360D9A251E4725006469A2 /* ProjectStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E360D99251E4725006469A2 /* ProjectStore.swift */; };
 		0E976FF6251D148800254286 /* Communicator(iOS).swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E976FF5251D148800254286 /* Communicator(iOS).swift */; };
 		0E977004251D2EAD00254286 /* WatchLogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E977003251D2EAD00254286 /* WatchLogViewController.swift */; };
 		0EBBAB08251C086900B04837 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EBBAB07251C086900B04837 /* AppDelegate.swift */; };
@@ -75,6 +76,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0E360D99251E4725006469A2 /* ProjectStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectStore.swift; sourceTree = "<group>"; };
 		0E976FF5251D148800254286 /* Communicator(iOS).swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Communicator(iOS).swift"; sourceTree = "<group>"; };
 		0E977003251D2EAD00254286 /* WatchLogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchLogViewController.swift; sourceTree = "<group>"; };
 		0EBBAB04251C086900B04837 /* Geoffrey.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Geoffrey.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -154,6 +156,7 @@
 				0ECBC82A251CE6E300017902 /* ProjectListViewController.swift */,
 				0E976FF5251D148800254286 /* Communicator(iOS).swift */,
 				0E977003251D2EAD00254286 /* WatchLogViewController.swift */,
+				0E360D99251E4725006469A2 /* ProjectStore.swift */,
 			);
 			path = Mother;
 			sourceTree = "<group>";
@@ -321,6 +324,7 @@
 				0EBBAB08251C086900B04837 /* AppDelegate.swift in Sources */,
 				0EBBAB53251CC1DB00B04837 /* UIImage+Screen.swift in Sources */,
 				0EBBAB0A251C086900B04837 /* SceneDelegate.swift in Sources */,
+				0E360D9A251E4725006469A2 /* ProjectStore.swift in Sources */,
 				0E977004251D2EAD00254286 /* WatchLogViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

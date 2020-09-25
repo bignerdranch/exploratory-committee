@@ -39,9 +39,9 @@ struct Screen: Codable {
     let hotspots: [Hotspot]
 }
 struct Project: Codable {
-    let uuid: UUID
+    let _id: String
     let name: String
-    let url: URL
+    let url: URL?
     let screens: [Screen]
 }
 
@@ -65,7 +65,7 @@ extension Project {
             Hotspot(rect: Rect(origin: Point(x: 40, y: 1050), size: Size(width: 300, height: 100)), target: sq2.uuid, transition: .fromRight, trigger: .tap)
         ])
         let url = URL(string: "https://www.google.com/")!
-        let project = Project(uuid: UUID(), name: "My Project", url: url, screens: [sq1, sq2])
+        let project = Project(_id: UUID().uuidString, name: "My Project", url: url, screens: [sq1, sq2])
         return project
     }
 }
