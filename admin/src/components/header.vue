@@ -23,7 +23,6 @@
     <md-dialog :md-active.sync="showImageDialog">
       <md-dialog-title>Upload Screens</md-dialog-title>
       <form enctype="multipart/form-data" novalidate v-on:submit.prevent="saveSceens">
-      <!-- @change="handleImages($event.target.files)" -->
         <input 
           type="file" 
           name="uploadFieldName" 
@@ -104,7 +103,6 @@ export default {
     newProjectName: '',
     projectsList: [],
     urls: [],
-    PROJECT: {},
   }),
    watch: {
     finished() {
@@ -122,10 +120,12 @@ export default {
     setShowDialog() {
       this.showImageDialog = true;
     },
+    
     AddHotspot() {
       this.numHotspot++;
       this.$emit('hotspot', this.numHotspot)
     },
+
     refresh() {
       // TODO: fetch new information
     },

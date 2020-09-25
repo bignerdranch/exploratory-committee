@@ -3,7 +3,6 @@ const router = express.Router();
 const Project = require('../models/project');
 
 router.post('/', async (req, res, next) => {
-  console.log('WHAT IS GOING ON?', req.body);
   try {
     const screens = await Project.updateOne(
       { _id: req.body.id },

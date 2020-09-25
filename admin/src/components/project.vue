@@ -19,7 +19,7 @@
                 <label for="Target">Target</label>
                 <select name="target" id="target" v-model="targetScreen">
                   <option></option>
-                  <template v-for="(screen, index) in screens">
+                  <template v-for="(screen, index) in PROJECT.screens">
                     <option :value="screen.name" :key="index" >{{ screen.name }}</option>
                   </template>
                 </select>
