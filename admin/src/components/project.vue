@@ -1,19 +1,98 @@
 <template>
   <div>
     <div id="screen-wrapper">
-      <template v-for="(screen, index) in screens">
-        <single-screen
-          :imgUrl="screen"
-          :key="index"
-          :id="index"
-          class="screen"
-        ></single-screen>
+      <template v-for="(screen) in PROJECT.screens">
+        <md-card
+          :key="screen.name"
+          class="screen-card"
+        >
+          <single-screen
+            :imgUrl="screen.url"
+            :key="index"
+            :id="index"
+            class="screen"
+          ></single-screen>
+          <md-divider></md-divider>
+          <label class="screen-label">{{ screen.name }}</label>
+          <md-icon>trash</md-icon>
+        </md-card>
       </template>
     </div>
+
+    <md-dialog :md-active.sync="showMenu">
+      <form
+        novalidate
+        class="md-layout"
+        @submit.prevent="setActionsOnSpot"
+      >
+        <md-card class="md-layout-item">
+          <md-card-content>
+            <md-field>
+              <label for="Target">Target</label>
+              <select
+                name="target"
+                id="target"
+                v-model="targetScreen"
+              >
+                <option></option>
+                <template v-for="(screen, index) in PROJECT.screens">
+                  <option
+                    :value="screen.name"
+                    :key="index"
+                  >{{ screen.name }}</option>
+                </template>
+              </select>
+            </md-field>
+
+            <md-field>
+              <label for="transition">Transition</label>
+              <select
+                name="transition"
+                id="transition"
+                v-model="targetTransition"
+              >
+                <option></option>
+                <template v-for="(transition, index) in transitionList">
+                  <option
+                    :value="transition"
+                    :key="index"
+                  >{{ transition }}</option>
+                </template>
+              </select>
+            </md-field>
+
+            <md-field>
+              <label for="transition">Triggers</label>
+              <select
+                name="triggers"
+                id="triggers"
+                v-model="targetTrigger"
+              >
+                <option></option>
+                <template v-for="(trigger, index) in triggersList">
+                  <option
+                    :value="trigger"
+                    :key="index"
+                  >{{ trigger }}</option>
+                </template>
+              </select>
+            </md-field>
+          </md-card-content>
+
+          <md-card-actions>
+            <md-button
+              type="submit"
+              class="md-primary"
+            >Done</md-button>
+          </md-card-actions>
+        </md-card>
+      </form>
+    </md-dialog>
   </div>
 </template>
 
 <script>
+import API from '../service';
 import SingleScreen from './singleScreen';
 
 export default {
@@ -23,8 +102,8 @@ export default {
   },
   props: {
     screens: {
-      required: true,
-      type: Array,
+      default: 0,
+      type: Number,
     },
     hotspot: {
       default: 0,
@@ -43,17 +122,72 @@ export default {
     listOfTargets: [],
     screensWithHotspots: [],
     currentParent: '',
+    showMenu: false,
+    transitionList: ['left', 'right', 'top', 'bottom', 'fade', 'instant'],
+    triggersList: ['swipeleft', 'swiperight', 'swipeup', 'swipedown', 'tap', 'longpress'],
+    // FORM
+    targetScreen: '',
+    targetTransition: '',
+    targetTrigger: '',
+    currentHotspotEdit: '',
+    PROJECT: {},
   }),
+
+  beforeRouteEnter(to, from, next) {
+    next(async (vm) => {
+      vm.PROJECT = await API.getProject(to.params.id);
+      vm.$emit('project-name', vm.PROJECT.name);
+      // RESEY ALL VALUES
+      vm.x1 = null;
+      vm.y1 = null;
+      vm.x2 = null;
+      vm.y2 = null;
+      vm.targer = null;
+      vm.index = 0;
+      vm.numOfClicks = 0;
+      vm.finishedDrawing = 0;
+      vm.listOfTargets = [];
+      vm.screensWithHotspots = [];
+      vm.currentParent = '';
+      vm.showMenu = false;
+    });
+  },
+
+  async beforeRouteUpdate(to) {
+    this.PROJECT = await API.getProject(to.params.id);
+    this.$emit('project-name', this.PROJECT.name);
+    // RESEY ALL VALUES
+    this.x1 = null;
+    this.y1 = null;
+    this.x2 = null;
+    this.y2 = null;
+    this.targer = null;
+    this.index = 0;
+    this.numOfClicks = 0;
+    this.finishedDrawing = 0;
+    this.listOfTargets = [];
+    this.screensWithHotspots = [];
+    this.currentParent = '';
+    this.showMenu = false;
+  },
+
   watch: {
     hotspot() {
       this.listeners();
       this.index++;
     },
+    async screens() {
+      this.PROJECT = await API.getProject(this.$route.params.id);
+    },
     numOfClicks() {
       if (this.numOfClicks === 2) {
+        const rec = this.listOfTargets[this.finishedDrawing];
+        rec.addEventListener('contextmenu', this.openTriggerMenu, true)
         this.drawRec(this.listOfTargets[this.finishedDrawing]);
+        const el = this.listOfTargets[this.finishedDrawing];
         this.screensWithHotspots.push({
           screen: this.currentParent, hotspot: {
+            id: el.getAttribute('id'),
             x1: this.x1,
             y1: this.y1,
             x2: this.x2,
@@ -65,6 +199,7 @@ export default {
       }
     }
   },
+
   methods: {
     startHotspot(parentScreen) {
       this.x1 = null;
@@ -73,12 +208,12 @@ export default {
       this.y2 = null;
       this.currentParent = '';
       const target = document.createElement('div');
-      const generateId = Math.random();
-      target.setAttribute("id", generateId);
+      target.setAttribute("id", this.uuidv4());
       document.getElementById('screen-wrapper').appendChild(target);
       target.style.border = "1px solid blue";
       target.style.position = "absolute";
       target.style.backgroundColor = "rgba(9, 168, 236, 0.42)";
+      target.style.zIndex = "2";
       this.listOfTargets.push(target);
       this.currentParent = parentScreen;
     },
@@ -87,16 +222,13 @@ export default {
 
       listOfImages.forEach(image => {
         image.addEventListener('mousedown', this.handlerOnMouseDown, true);
-        // image.addEventListener('mousemove', this.handlerOnMouseMove, true);
         image.addEventListener('mouseup', this.removeListeners, true);
       });
     },
     removeListeners(e) {
-      console.log('mouse up', e.clientX, e.clientY);
       this.x2 = e.clientX;
       this.y2 = e.clientY;
       document.removeEventListener('mousedown', this.handlerOnMouseDown, true);
-      // document.removeEventListener('mousemove', this.handlerOnMouseMove, true);
       document.removeEventListener('mouseup', this.removeListeners, true);
     },
     handlerOnMouseDown(e) {
@@ -117,6 +249,29 @@ export default {
       target.style.width = x4 - x3 + 'px';
       target.style.height = y4 - y3 + 'px';
     },
+    openTriggerMenu(e) {
+      this.currentHotspotEdit = e.srcElement.id
+      e.preventDefault();
+      this.showMenu = true;
+    },
+    setActionsOnSpot() {
+      const index = this.screensWithHotspots.findIndex(el => el.hotspot.id === this.currentHotspotEdit);
+      this.screensWithHotspots[index].hotspot['trigger'] = this.targetTrigger;
+      this.screensWithHotspots[index].hotspot['transition'] = this.targetTransition;
+      this.screensWithHotspots[index].hotspot['destination'] = this.targetScreen;
+      // RESET
+      this.targetTrigger = '';
+      this.targetTransition = '';
+      this.targetScreen = '';
+      this.currentHotspotEdit = '';
+      this.showMenu = false;
+    },
+    uuidv4() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+        const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    },
   },
 };
 </script>
@@ -131,12 +286,16 @@ export default {
 
 .screen {
   width: 200px;
-  margin: 20px;
 }
 
-// canvas {
-//   width: 200px;
-//   background-color: turquoise;
-//   border: 1px solid blue;
-// }
+.screen-card {
+  width: 200px;
+  margin: 20px;
+  display: inline-block;
+
+  .screen-label {
+    padding: 10px;
+    color: grey;
+  }
+}
 </style>

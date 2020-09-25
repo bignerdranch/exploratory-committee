@@ -39,14 +39,14 @@ export default {
     canvasBorder() {
       return this.currCanvas.getBoundingClientRect();
     },
-    locationInCanvas() {
-      // x: rectX - canvasBorderX
-      // y: rectY - canvasBorderY
-      // h: rect.h
-      // w: rect.w
+    // locationInCanvas() {
+    // x: rectX - canvasBorderX
+    // y: rectY - canvasBorderY
+    // h: rect.h
+    // w: rect.w
 
-      // add to the array
-    },
+    // add to the array
+    // },
   },
   methods: {
     drawCanvas() {

@@ -1,23 +1,48 @@
+
 <template>
   <div id="app">
-    <router-view></router-view>
+    <Header @screens="setScreens" @hotspot="setHotspot" :finished="finished" :projectName="projectName" />
+    <router-view  
+      :screens="screens" 
+      :hotspot="hotspot" 
+      @finished-drawing="setFinished"
+      @project-name="setProjectName"
+      ></router-view>
   </div>
 </template>
 
 <script>
-
+import Header from './components/header';
 export default {
-  name: 'App',
+ components: {
+    Header,
+  },
+ data: () => ({
+   screens: 0,
+   hotspot: 0,
+   finished: 0,
+   projectName: '',
+  }),
+  methods: {
+    setScreens() {
+      this.screens++;
+    },
+    setHotspot(val) {
+      this.hotspot = val;
+    },
+    setFinished(val) {
+      this.finished = val;
+    },
+    setProjectName(name) {
+      this.projectName = name;
+    }
+  }
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  background-color: rgba(230, 230, 230, 1);  
+  height: 100vh;
 }
 </style>

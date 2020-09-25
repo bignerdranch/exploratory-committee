@@ -1,7 +1,7 @@
 <template>
   <div class="page-container">
     <md-toolbar class="md-primary">
-      <md-button class="md-icon-button" @click="showNavigation = true">
+      <md-button class="md-icon-button" @click="openMenu">
         <md-icon>menu</md-icon>
       </md-button>
       
@@ -17,23 +17,23 @@
         <md-icon>refresh</md-icon>
       </md-button>
 
-      <span class="md-title">{ my project }</span>     
+      <span class="md-title" v-if="isItRoute">{{ projectName }}</span>
     </md-toolbar>
 
     <md-dialog :md-active.sync="showImageDialog">
       <md-dialog-title>Upload Screens</md-dialog-title>
-      <form enctype="multipart/form-data" novalidate>
+      <form enctype="multipart/form-data" novalidate v-on:submit.prevent="saveSceens">
         <input 
           type="file" 
           name="uploadFieldName" 
-          @change="handleImages($event.target.files)"
-          accept="image/*" 
-          multiple
+          @change="handleUpload($event)"
+          accept="image/*"
+          multiple 
           class="input-file">
       </form>
       <md-dialog-actions>
         <md-button class="md-primary" @click="showImageDialog = false">CLOSE</md-button>
-        <md-button class="md-primary" @click="saveFiles">UPLOAD</md-button>
+        <md-button class="md-primary" type="submit" @click="saveSceens">UPLOAD</md-button>
       </md-dialog-actions>
     </md-dialog>
 
@@ -64,26 +64,31 @@
             <span class="md-list-item-text">Add New Project</span>
         </md-list-item>
         <md-divider></md-divider>
-      <!-- SIDE MENU OPEN -->
-        <md-list-item>
-          <md-icon>watch</md-icon>
-          <span class="md-list-item-text">project 1</span>
-        </md-list-item>
 
-        <md-list-item>
-          <md-icon>watch</md-icon>
-          <span class="md-list-item-text">projcet 2</span>
-        </md-list-item>
-
+        <template v-for="(item, index) in projectsList">
+          <router-link :key=index :to="{ name: 'Project', params: { id: item._id } }">
+            <md-list-item>
+              <md-icon>watch</md-icon>
+              <span class="md-list-item-text">{{ item.name }}</span>
+            </md-list-item>
+          </router-link>
+        </template>
       </md-list>
     </md-drawer>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+import API from '../service';
+
 export default {
   name: 'Header',
    props: {
+    projectName: {
+      default: '',
+      type: String,
+    },
     finished: {
       default: 0,
       type: Number,
@@ -92,48 +97,91 @@ export default {
   data: () => ({
     showImageDialog: false,
     showAddProjectDialog: false,
-    newProjectName: '',
     multiple: null,
-    base64ImageList: [],
     showNavigation: false,
-    showSidepanel: false,
     numHotspot: 0,
+    newProjectName: '',
+    projectsList: [],
+    urls: [],
   }),
    watch: {
     finished() {
       console.log('finished recived');
     },
   },
+
+  computed: {
+    isItRoute() {
+      return ['Project'].indexOf(this.$route.name) > -1;
+    },
+  },
+
   methods: {
     setShowDialog() {
       this.showImageDialog = true;
     },
+    
     AddHotspot() {
       this.numHotspot++;
       this.$emit('hotspot', this.numHotspot)
     },
+
     refresh() {
       // TODO: fetch new information
     },
-    saveFiles() {
+    
+    async saveSceens() {
       this.showImageDialog = false;
-      this.$emit('screens', this.base64ImageList)
+      await API.saveScreens(this.$route.params.id, this.urls);
+      this.$emit('screens')
     },
-    handleImages(files) {
-      Array.from(files).forEach(file =>  this.createBase64Image(file));
-    },
-    createBase64Image(file) {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = e =>{
-          this.base64ImageList.push(e.target.result);
-      };
-    },
-    addProject() {
-      console.log('submit new project', this.newProjectName);
+    
+    async addProject() {
+      const id = await API.addNewProject(this.newProjectName);
+      this.projectsList = await API.getAllProjects();
       this.showAddProjectDialog = false;
+      this.showNavigation = false;
       this.newProjectName = '';
+      this.$router.push({ path: `/project/${id}` })
     },
+
+    async openMenu() {
+      this.projectsList = await API.getAllProjects();
+      this.showNavigation = true;
+    },
+    // CLOUDINARY UPLAOD IMAGES
+    async handleUpload(event) {
+      const files = event.target.files;
+      files.forEach(file => {
+        let reader = new FileReader();
+        const cloudName = 'dunnisf1r';
+        const uploadPreset = 'o5jxetvn';
+
+        reader.addEventListener('load', async function () {
+          let cloudinaryUploadULR = `https://api.cloudinary.com/v1_1/${cloudName}/upload`;
+          let requestObj = {
+            url: cloudinaryUploadULR,
+            method: 'POST',
+            data: {
+              upload_preset: uploadPreset,
+              tags: file.name,
+              file: reader.result,
+            },
+          };
+          
+            const res = await axios(requestObj);
+            this.urls.push({ url: res.data.url, name: file.name, uuid: this.uuidv4() })
+          }.bind(this), false);
+
+          reader.readAsDataURL(file);
+      })
+    },
+    uuidv4() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) =>  {
+      const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  },
   }
 }
 </script>
