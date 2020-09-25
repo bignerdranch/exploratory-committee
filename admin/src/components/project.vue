@@ -1,16 +1,26 @@
 <template>
   <div>
     <div id="screen-wrapper">
-      <template v-for="(screen) in screens" >
-        <img :key="screen" :src="screen" class="screen"/>
+      <template v-for="(screen, index) in screens">
+        <single-screen
+          :imgUrl="screen"
+          :key="index"
+          :id="index"
+          class="screen"
+        ></single-screen>
       </template>
     </div>
-  </div>  
+  </div>
 </template>
 
 <script>
+import SingleScreen from './singleScreen';
+
 export default {
   name: 'Project',
+  components: {
+    SingleScreen,
+  },
   props: {
     screens: {
       required: true,
@@ -42,12 +52,14 @@ export default {
     numOfClicks() {
       if (this.numOfClicks === 2) {
         this.drawRec(this.listOfTargets[this.finishedDrawing]);
-        this.screensWithHotspots.push({ screen: this.currentParent, hotspot: {
+        this.screensWithHotspots.push({
+          screen: this.currentParent, hotspot: {
             x1: this.x1,
             y1: this.y1,
             x2: this.x2,
             y2: this.y2,
-          }});
+          }
+        });
         this.finishedDrawing++;
         this.numOfClicks = 0;
       }
@@ -59,7 +71,7 @@ export default {
       this.x2 = null;
       this.y1 = null;
       this.y2 = null;
-      this.currentParent= '';
+      this.currentParent = '';
       const target = document.createElement('div');
       const generateId = Math.random();
       target.setAttribute("id", generateId);
@@ -72,7 +84,7 @@ export default {
     },
     listeners() {
       const listOfImages = document.getElementsByClassName("screen");
-      
+
       listOfImages.forEach(image => {
         image.addEventListener('mousedown', this.handlerOnMouseDown, true);
         // image.addEventListener('mousemove', this.handlerOnMouseMove, true);
