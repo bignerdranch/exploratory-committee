@@ -21,7 +21,8 @@
               @click="markAsFirst(screen.uuid)"
               :class="{'first': screen.firstScreen}"
             >
-              <md-icon>check_mark</md-icon>
+              <md-icon v-if="screen.firstScreen">first_page</md-icon>
+              <md-icon v-else>info_outline</md-icon>
             </button>
           </div>
         </md-card>

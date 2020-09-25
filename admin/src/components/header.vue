@@ -221,7 +221,7 @@ export default {
           };
 
           const res = await axios(requestObj);
-          this.urls.push({ url: res.data.url, name: file.name, uuid: this.uuidv4() })
+          this.urls.push({ url: res.data.url, name: file.name, uuid: this.uuidv4(), hotspots: [] })
         }.bind(this), false);
 
         reader.readAsDataURL(file);
