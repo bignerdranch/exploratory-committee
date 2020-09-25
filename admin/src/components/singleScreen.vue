@@ -1,11 +1,12 @@
 <template>
   <canvas
     ref="canvas"
-    height="imgWidth"
-    width="imgHeight"
+    id="canvas"
+    class="single-screen"
     @mousedown="mouseDown"
     @mouseup="mouseUp"
     @mousemove="mouseMove"
+    :style="`background-image:url(${imgUrl})`"
   >
   </canvas>
 </template>
@@ -16,7 +17,12 @@ export default {
     imgWidth: 0,
     imgHeight: 0,
     hotspots: [],
-    rect: {},
+    rect: {
+      h: 0,
+      w: 0,
+      startX: 0,
+      startY: 0,
+    },
     drag: false,
   }),
   props: {
@@ -62,13 +68,13 @@ export default {
         this.$refs.canvas.width = this.imgWidth;
         this.$refs.canvas.height = this.imgHeight;
 
-        return ctx.drawImage(bg, 0, 0)
+        return ctx.rect(0, 0, this.imgWidth, this.imgHeight);
       };
     },
     mouseDown(e) {
-      console.log('canvas border', this.canvasBorder);
-      this.rect.startX = e.pageX - this.canvasBorder.left;
-      this.rect.startY = e.pageY - this.canvasBorder.top;
+      // this.startX = e.pageX - this.canvasBorder.left;
+      this.startX = e.pageX;
+      this.startY = e.pageY;
       this.drag = true;
     },
     mouseUp() {
@@ -76,15 +82,20 @@ export default {
     },
     mouseMove(e) {
       if (this.drag) {
-        this.rect.w = (e.pageX - this.canvasBorder.left) - this.rect.startX;
-        this.rect.h = (e.pageY - this.canvasBorder.top) - this.rect.startY;
+        // this.rect.w = (e.pageX - this.canvasBorder.left) - this.rect.startX;
+        // this.rect.h = (e.pageY - this.canvasBorder.top) - this.rect.startY;
 
-        this.draw();
+        const w = e.pageX - this.rect.startX - this.currCanvas.offsetLeft;
+        const h = e.pageY - this.rect.startY - this.currCanvas.offsetTop;
+        this.draw(w, h, this.rect.startX, this.rect.startY);
       }
+      return;
     },
-    draw() {
-      this.canvasContext.setLineDash([6]);
-      this.canvasContext.strokeRect(this.rect.startX, this.rect.startY, this.rect.w, this.rect.h);
+    draw(width, height, x, y) {
+      this.canvasContext.clearRect(0, 0, this.currCanvas.width, this.currCanvas.height);
+      this.canvasContext.strokeStyle = "blue";
+      this.canvasContext.lineWidth = 3;
+      this.canvasContext.strokeRect(x, y, width, height);
     },
   },
   mounted() {
@@ -93,8 +104,8 @@ export default {
 }
 </script>
 <style scoped>
-.screen {
-  width: 200px;
-  margin: 20px;
+.single-screen {
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 </style>
