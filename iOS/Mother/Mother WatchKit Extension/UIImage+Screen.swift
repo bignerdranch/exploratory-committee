@@ -31,7 +31,7 @@ extension Hotspot {
     static var cornerRadius: CGFloat = 20.0
     static var strokeWidth: CGFloat = 8.0
     static var strokeColor: CGColor = UIColor.white.cgColor
-    static var fillColor: CGColor = UIColor(red: 0.7, green: 0.7, blue: 1.0, alpha: 0.5).cgColor
+    static var fillColor: CGColor = UIColor(red: 0.3, green: 0.9, blue: 0.2, alpha: 0.8).cgColor
     
     var cgRect: CGRect { return rect.cgRect }
     

@@ -68,11 +68,9 @@ class ScreenInterfaceController: WKInterfaceController {
         } else {
             print("ctx")
         }
-        // Configure interface objects here.
     }
 
     override func willActivate() {
-        // This method is called when watch view controller is about to be visible to user
         super.willActivate()
         
         if let uuid = self.screen?.uuid {
@@ -92,25 +90,44 @@ class ScreenInterfaceController: WKInterfaceController {
     }
     
     func flashHotspots() {
-        animate(withDuration: 0.3) {
+        Communicator.report(.hint)
+        let duration: TimeInterval = 0.10
+        
+        animate(withDuration: duration) {
             self.image.setAlpha(1.0)
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            self.animate(withDuration: 0.3) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+            self.animate(withDuration: duration) {
+                self.image.setAlpha(0.0)
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + (duration * 2)) {
+            self.animate(withDuration: duration) {
+                self.image.setAlpha(1.0)
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + (duration * 3)) {
+            self.animate(withDuration: duration) {
                 self.image.setAlpha(0.0)
             }
         }
     }
 
+    func hitTest(for point: Point, with trigger: Trigger) -> Hotspot? {
+        if let hotspot = screen?.hitTest(for: point),
+           hotspot.trigger == trigger {
+            return hotspot
+        }
+        return nil
+    }
     
     @IBAction func didTap(_ sender: WKTapGestureRecognizer) {
-        let scale: CGFloat = WKInterfaceDevice.current().screenScale
-        let point =  sender.locationInObject().point(with: scale)
+        let point = sender.point
         print("tap \(point)")
         
         Communicator.report(.tap, message: point.description)
         
-        if let hotspot = screen?.hitTest(for: point), hotspot.trigger == .tap {
+        if let hotspot = hitTest(for: point, with: .tap) {
             transition(to: hotspot, in: Communicator.shared.currentProject!)
         } else {
             flashHotspots()
@@ -118,31 +135,55 @@ class ScreenInterfaceController: WKInterfaceController {
     }
     
     @IBAction func didSwipeRight(_ sender: WKSwipeGestureRecognizer) {
-        print("swipe")
-
+        let point = sender.point
+        Communicator.report(.swipeRight, message: point.description)
+        if let hotspot = hitTest(for: point, with: .swipeRight) {
+            transition(to: hotspot, in: Communicator.shared.currentProject!)
+        } else {
+            flashHotspots()
+        }
     }
+    
     @IBAction func didSwipeLeft(_ sender: WKSwipeGestureRecognizer) {
-        print("swipe")
-
+        let point = sender.point
+        Communicator.report(.swipeLeft, message: point.description)
+        if let hotspot = hitTest(for: point, with: .swipeLeft) {
+            transition(to: hotspot, in: Communicator.shared.currentProject!)
+        } else {
+            flashHotspots()
+        }
     }
+    
     @IBAction func didSwipeUp(_ sender: WKSwipeGestureRecognizer) {
-        print("swipe")
-
+        let point = sender.point
+        Communicator.report(.swipeUp, message: point.description)
+        if let hotspot = hitTest(for: point, with: .swipeUp) {
+            transition(to: hotspot, in: Communicator.shared.currentProject!)
+        } else {
+            flashHotspots()
+        }
     }
+    
     @IBAction func didSwipeDown(_ sender: WKSwipeGestureRecognizer) {
-        print("swipe")
-
+        let point = sender.point
+        Communicator.report(.swipeDown, message: point.description)
+        if let hotspot = hitTest(for: point, with: .swipeDown) {
+            transition(to: hotspot, in: Communicator.shared.currentProject!)
+        } else {
+            flashHotspots()
+        }
     }
 
     @IBAction func didLongPress(_ sender: WKLongPressGestureRecognizer) {
-        let scale: CGFloat = WKInterfaceDevice.current().screenScale
-        let point =  sender.locationInObject().point(with: scale)
+        let point = sender.point
 
         let typ: ReportType = sender.state == .ended ? .longPressEnded : .longPressRecognized
         // TODO calculate time of press
         Communicator.report(typ, message: point.description)
 
-        if let hotspot = screen?.hitTest(for: point), hotspot.trigger == .longPress {
+        if let hotspot = screen?.hitTest(for: point),
+           hotspot.trigger == .longPress,
+           typ == .longPressRecognized {
             transitioningTo = hotspot
             transition(to: hotspot, in: Communicator.shared.currentProject!)
         } else {
@@ -177,5 +218,21 @@ class ScreenInterfaceController: WKInterfaceController {
     override func pop() {
         super.pop()
         print("pop")
+    }
+}
+
+extension WKGestureRecognizer {
+    var point: Point {
+        let scale: CGFloat = WKInterfaceDevice.current().screenScale
+        return locationInObject().point(with: scale)
+    }
+}
+
+extension ScreenInterfaceController: WKCrownDelegate {
+    func crownDidBecomeIdle(_ crownSequencer: WKCrownSequencer?) {
+        print("rot end")
+    }
+    func crownDidRotate(_ crownSequencer: WKCrownSequencer?, rotationalDelta: Double) {
+        print("rot \(rotationalDelta)")
     }
 }

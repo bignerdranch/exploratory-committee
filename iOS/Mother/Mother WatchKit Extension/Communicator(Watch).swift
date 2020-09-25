@@ -99,7 +99,9 @@ enum ReportType: String {
     case longPressRecognized
     case longPressEnded
     case back
+    case hint
     case present
+    case swipeRight, swipeLeft, swipeUp, swipeDown
 }
 
 extension Communicator {

@@ -103,7 +103,13 @@ extension Communicator: WCSessionDelegate {
     
     func transmitProject(_ project: Project, completion: @escaping (Progress) -> Void) {
         logMessage("Transmitting project")
-        session.sendMessage(["newProject":project.uuid.uuidString], replyHandler: { response in
+        
+        let dataPayload: [String:Any] = [
+            "newProject": project.uuid.uuidString,
+            "projectUrl": project.url
+        ]
+        
+        session.sendMessage(dataPayload, replyHandler: { response in
             if let uuid = response["send"] as? String,
                uuid == project.uuid.uuidString {
                 completion(self.sendProjectAsFile(project))
