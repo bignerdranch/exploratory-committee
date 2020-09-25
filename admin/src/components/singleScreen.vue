@@ -30,9 +30,9 @@ export default {
       required: true,
       type: String,
     },
-    id: {
+    uuid: {
       required: true,
-      type: Number,
+      type: String,
     },
   },
   computed: {
@@ -72,30 +72,40 @@ export default {
       };
     },
     mouseDown(e) {
-      // this.startX = e.pageX - this.canvasBorder.left;
-      this.startX = e.pageX;
-      this.startY = e.pageY;
+      this.startX = e.pageX - this.canvasBorder.top;
+      console.log(this.startX);
+      // this.rect.startX = e.pageX;
+      this.startY = e.pageY - this.canvasBorder.left;
+      // this.rect.startY = e.pageY;
       this.drag = true;
     },
     mouseUp() {
       this.drag = false;
+      this.submitHotspot();
     },
     mouseMove(e) {
       if (this.drag) {
-        // this.rect.w = (e.pageX - this.canvasBorder.left) - this.rect.startX;
-        // this.rect.h = (e.pageY - this.canvasBorder.top) - this.rect.startY;
+        this.rect.w = (e.pageX - this.canvasBorder.left) - this.rect.startX;
+        this.rect.h = (e.pageY - this.canvasBorder.top) - this.rect.startY;
 
-        const w = e.pageX - this.rect.startX - this.currCanvas.offsetLeft;
-        const h = e.pageY - this.rect.startY - this.currCanvas.offsetTop;
-        this.draw(w, h, this.rect.startX, this.rect.startY);
+        this.draw();
       }
       return;
     },
-    draw(width, height, x, y) {
+    draw() {
       this.canvasContext.clearRect(0, 0, this.currCanvas.width, this.currCanvas.height);
-      this.canvasContext.strokeStyle = "blue";
+      this.canvasContext.strokeStyle = 'blue';
       this.canvasContext.lineWidth = 3;
-      this.canvasContext.strokeRect(x, y, width, height);
+      this.canvasContext.strokeRect(this.rect.startX, this.rect.startY, this.rect.w, this.rect.h);
+    },
+    submitHotspot() {
+      this.$emit('add-hotspot', { rect: { ...this.rect, uuid: this.uuidv4() }, uuid: this.uuid });
+    },
+    uuidv4() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+        const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
     },
   },
   mounted() {

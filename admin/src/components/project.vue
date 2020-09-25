@@ -9,8 +9,9 @@
           <single-screen
             :imgUrl="screen.url"
             :key="index"
-            :id="index"
+            :uuid="screen.uuid"
             class="screen"
+            @add-hotspot="addHotspot"
           ></single-screen>
           <md-divider></md-divider>
           <div class="info-wrapper">
@@ -183,6 +184,7 @@ export default {
 
   watch: {
     hotspot() {
+      // call API 
       this.listeners();
       this.index++;
     },
@@ -211,6 +213,10 @@ export default {
   },
 
   methods: {
+    addHotspot(data) {
+      const i = this.PROJECT.screens.findIndex(i => i.uuid === data.uuid);
+      this.$set(this.PROJECT.screens[i].hotspots, this.PROJECT.screens[i].hotspots.length, data.rect);
+    },
     startHotspot(parentScreen) {
       this.x1 = null;
       this.x2 = null;
