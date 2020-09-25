@@ -127,11 +127,22 @@ class ScreenInterfaceController: WKInterfaceController {
         
         Communicator.report(.tap, message: point.description)
         
+        if didTapHomeArea(point) {
+            Communicator.report(.back, message: point.description)
+            pop()
+            return
+        }
+        
         if let hotspot = hitTest(for: point, with: .tap) {
             transition(to: hotspot, in: Communicator.shared.currentProject!)
         } else {
             flashHotspots()
         }
+    }
+    
+    static let homeRect = Rect(origin: Point(x: 0, y: 0), size: Size(width: 100, height: 45))
+    func didTapHomeArea(_ point: Point) -> Bool {
+        return ScreenInterfaceController.homeRect.contains(point)
     }
     
     @IBAction func didSwipeRight(_ sender: WKSwipeGestureRecognizer) {

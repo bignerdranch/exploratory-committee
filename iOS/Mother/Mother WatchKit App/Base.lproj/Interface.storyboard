@@ -25,7 +25,7 @@
         <!--screen-->
         <scene sceneID="1Kg-vT-dfQ">
             <objects>
-                <controller identifier="screen" id="udJ-pR-1m4" customClass="ScreenInterfaceController" customModule="Geoffrey_Watch_Extension">
+                <controller identifier="screen" fullScreen="YES" id="udJ-pR-1m4" customClass="ScreenInterfaceController" customModule="Geoffrey_Watch_Extension">
                     <items>
                         <group width="1" alignment="left" layout="vertical" id="IHW-mD-zmU">
                             <items>

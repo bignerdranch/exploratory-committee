@@ -17,7 +17,7 @@ class ProjectListViewController: UITableViewController {
         let refresh = UIRefreshControl()
         refresh.addTarget(self, action: #selector(didRequestRefresh(_:)), for: .valueChanged)
         tableView.refreshControl = refresh
-
+        self.refresh()
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -27,6 +27,10 @@ class ProjectListViewController: UITableViewController {
 
     @objc @IBAction func didRequestRefresh(_ sender: Any) {
         print("refresh")
+        refresh()
+    }
+    
+    func refresh() {
         ProjectStore.shared.refresh { projects, error in
             if let error = error {
                 print("Error! \(error)")

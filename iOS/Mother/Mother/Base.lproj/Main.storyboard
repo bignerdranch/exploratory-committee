@@ -25,10 +25,10 @@
             </objects>
             <point key="canvasLocation" x="-990" y="55"/>
         </scene>
-        <!--Project List View Controller-->
+        <!--Projects-->
         <scene sceneID="Zin-0V-kTO">
             <objects>
-                <tableViewController id="Bny-BW-nSz" customClass="ProjectListViewController" customModule="Geoffrey" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController title="Projects" id="Bny-BW-nSz" customClass="ProjectListViewController" customModule="Geoffrey" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="kPa-Mp-0Ld">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -38,8 +38,9 @@
                             <outlet property="delegate" destination="Bny-BW-nSz" id="y7K-Hp-JNH"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="Qc9-pU-9Bn">
-                        <barButtonItem key="rightBarButtonItem" title="Log" id="mqF-kg-BMp">
+                    <navigationItem key="navigationItem" title="Projects" id="Qc9-pU-9Bn">
+                        <barButtonItem key="rightBarButtonItem" image="log" id="mqF-kg-BMp">
+                            <color key="tintColor" red="0.1987392902" green="0.45508629080000002" blue="0.71375727649999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                             <connections>
                                 <segue destination="gm4-Ip-Q5F" kind="show" id="XKm-am-Fdh"/>
                             </connections>
@@ -85,7 +86,9 @@
             <point key="canvasLocation" x="948" y="55"/>
         </scene>
     </scenes>
+    <color key="tintColor" red="0.1987392902" green="0.45508629080000002" blue="0.71375727649999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
     <resources>
+        <image name="log" width="32" height="32"/>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
