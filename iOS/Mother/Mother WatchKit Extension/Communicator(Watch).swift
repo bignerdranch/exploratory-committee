@@ -20,7 +20,7 @@ class Communicator: NSObject {
         session.activate()
     }
     
-    var currentProject: Project? = Project.demoProject()
+    var currentProject: Project? 
 
 }
 

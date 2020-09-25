@@ -66,23 +66,32 @@ class ProjectListViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        super.tableView(tableView, didSelectRowAt: indexPath)
-        let cell = tableView.cellForRow(at: indexPath)
-        let indicator = UIActivityIndicatorView()
-        cell?.accessoryView = indicator
-        indicator.startAnimating()
-
-        let project = projects[indexPath.row]
-        Communicator.shared.transmitProject(project, completion: { progress in
-            DispatchQueue.main.async {
-                let pView = UIProgressView(progressViewStyle: .bar)
-                cell?.accessoryView = pView
-                pView.observedProgress = progress
-            }
-        })
+        performSegue(withIdentifier: "displayProject", sender: self)
+////        super.tableView(tableView, didSelectRowAt: indexPath)
+//        let cell = tableView.cellForRow(at: indexPath)
+//        let indicator = UIActivityIndicatorView()
+//        cell?.accessoryView = indicator
+//        indicator.startAnimating()
+//
+//        let project = projects[indexPath.row]
+//        Communicator.shared.transmitProject(project, completion: { progress in
+//            DispatchQueue.main.async {
+//                let pView = UIProgressView(progressViewStyle: .bar)
+//                cell?.accessoryView = pView
+//                pView.observedProgress = progress
+//            }
+//        })
         
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        super.prepare(for: segue, sender: sender)
+        if let indexPath = tableView.indexPathForSelectedRow,
+           let dest = segue.destination as? ProjectDetailViewController {
+            let project = projects[indexPath.row]
+            dest.project = project
+        }
+    }
 
     /*
     // Override to support conditional editing of the table view.
