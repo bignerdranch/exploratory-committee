@@ -127,7 +127,7 @@ export default {
     },
 
     refresh() {
-      // TODO: fetch new information
+      location.reload();
     },
     
     async saveSceens() {
