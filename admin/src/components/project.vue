@@ -113,7 +113,7 @@ export default {
     });
   },
 
-  async beforeRouteUpdate (to) {
+  async beforeRouteUpdate (to, from ,next) {
     this.PROJECT = await API.getProject(to.params.id);
     this.$emit('project-name', this.PROJECT.name);
     // RESEY ALL VALUES
@@ -129,6 +129,8 @@ export default {
     this.screensWithHotspots= [];
     this.currentParent= '';
     this.showMenu= false;
+
+    next();
   },
 
   watch: {
