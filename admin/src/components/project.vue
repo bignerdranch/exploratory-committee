@@ -13,8 +13,16 @@
             class="screen"
           ></single-screen>
           <md-divider></md-divider>
-          <label class="screen-label">{{ screen.name }}</label>
-          <md-icon>trash</md-icon>
+          <div class="info-wrapper">
+            <label class="screen-label">{{ screen.name }}</label>
+            <button
+              class="btn-check-first"
+              @click="markAsFirst(screen.uuid)"
+              :class="{'first': screen.firstScreen}"
+            >
+              <md-icon>check_mark</md-icon>
+            </button>
+          </div>
         </md-card>
       </template>
     </div>
@@ -153,7 +161,7 @@ export default {
     });
   },
 
-  async beforeRouteUpdate(to) {
+  async beforeRouteUpdate(to, from, next) {
     this.PROJECT = await API.getProject(to.params.id);
     this.$emit('project-name', this.PROJECT.name);
     // RESEY ALL VALUES
@@ -169,6 +177,8 @@ export default {
     this.screensWithHotspots = [];
     this.currentParent = '';
     this.showMenu = false;
+
+    next();
   },
 
   watch: {
@@ -265,12 +275,28 @@ export default {
       this.targetScreen = '';
       this.currentHotspotEdit = '';
       this.showMenu = false;
+
+      // CALL API TO UPDATE THE SCREENS
     },
     uuidv4() {
       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
         const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
       });
+    },
+
+    async markAsFirst(uuid) {
+      const i = this.PROJECT.screens.findIndex(i => i.uuid === uuid);
+      this.PROJECT.screens[i] = { ...this.PROJECT.screens[i], firstScreen: true };
+
+      this.PROJECT.screens.forEach((part, index) => {
+        part['firstScreen'] = false;
+        if (i === index) {
+          part['firstScreen'] = true;
+        }
+      });
+
+      await API.saveScreens(this.$route.params.id, this.PROJECT.screens);
     },
   },
 };
@@ -297,5 +323,46 @@ export default {
     padding: 10px;
     color: grey;
   }
+
+  .info-wrapper {
+    padding: 5px;
+
+    .screen-label {
+      white-space: nowrap;
+      overflow: hidden;
+      width: 150px;
+      text-overflow: ellipsis;
+      display: inline-block;
+    }
+
+    .first.btn-check-first {
+      i {
+        color: green;
+      }
+    }
+    .btn-check-first {
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+
+      i {
+        display: inline-block;
+        color: grey;
+      }
+    }
+  }
+}
+
+.md-field.md-theme-default /deep/ {
+  label {
+    top: -7px;
+  }
+}
+
+#target,
+#transition,
+#triggers /deep/ {
+  border: none;
+  width: 100%;
 }
 </style>
