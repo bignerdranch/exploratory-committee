@@ -1,8 +1,13 @@
 
 <template>
   <div id="app">
-    <Header @screens="setScreens" @hotspot="setHotspot" :finished="finished"/>
-    <router-view  :screens="screens" :hotspot="hotspot" @finished-drawing="setFinished"></router-view>
+    <Header @screens="setScreens" @hotspot="setHotspot" :finished="finished" :projectName="projectName" />
+    <router-view  
+      :screens="screens" 
+      :hotspot="hotspot" 
+      @finished-drawing="setFinished"
+      @project-name="setProjectName"
+      ></router-view>
   </div>
 </template>
 
@@ -13,19 +18,23 @@ export default {
     Header,
   },
  data: () => ({
-   screens: [],
+   screens: 0,
    hotspot: 0,
    finished: 0,
+   projectName: '',
   }),
   methods: {
-    setScreens(screens) {
-      this.screens = screens;
+    setScreens() {
+      this.screens++;
     },
     setHotspot(val) {
       this.hotspot = val;
     },
     setFinished(val) {
       this.finished = val;
+    },
+    setProjectName(name) {
+      this.projectName = name;
     }
   }
 }

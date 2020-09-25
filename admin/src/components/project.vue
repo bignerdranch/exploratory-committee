@@ -1,9 +1,9 @@
 <template>
   <div>
     <div id="screen-wrapper">
-      <template v-for="(screen) in screens" >
+      <template v-for="(screen) in PROJECT.screens" >
         <md-card :key="screen.name" class="screen-card">
-          <img  :src="screen.file" class="screen"/>
+          <img  :src="screen.url" class="screen"/>
           <md-divider></md-divider>
           <label class="screen-label">{{ screen.name }}</label>
           <md-icon>trash</md-icon>          
@@ -62,8 +62,8 @@ export default {
   name: 'Project',
   props: {
     screens: {
-      required: true,
-      type: Array,
+      default: 0,
+      type: Number,
     },
     hotspot: {
       default: 0,
@@ -90,12 +90,13 @@ export default {
     targetTransition: '',
     targetTrigger: '',
     currentHotspotEdit: '',
-    PROJECT: null,
+    PROJECT: {},
   }),
 
   beforeRouteEnter(to, from, next) {
     next(async(vm) => {
       vm.PROJECT = await API.getProject(to.params.id);
+      vm.$emit('project-name', vm.PROJECT.name);
       // RESEY ALL VALUES
       vm.x1= null;
       vm.y1= null;
@@ -112,10 +113,31 @@ export default {
     });
   },
 
+  async beforeRouteUpdate (to) {
+    this.PROJECT = await API.getProject(to.params.id);
+    this.$emit('project-name', this.PROJECT.name);
+    // RESEY ALL VALUES
+    this.x1= null;
+    this.y1= null;
+    this.x2= null;
+    this.y2= null;
+    this.targer= null;
+    this.index= 0;
+    this.numOfClicks= 0;
+    this.finishedDrawing= 0;
+    this.listOfTargets= [];
+    this.screensWithHotspots= [];
+    this.currentParent= '';
+    this.showMenu= false;
+  },
+
   watch: {
     hotspot() {
       this.listeners();
       this.index++;
+    },
+    async screens() {
+      this.PROJECT = await API.getProject(this.$route.params.id);
     },
     numOfClicks() {
       if (this.numOfClicks === 2) {
@@ -149,7 +171,7 @@ export default {
       target.style.border = "1px solid blue";
       target.style.position = "absolute";
       target.style.backgroundColor = "rgba(9, 168, 236, 0.42)";
-      target.style.zIndex = "500";
+      target.style.zIndex = "2";
       this.listOfTargets.push(target);
       this.currentParent = parentScreen;
     },

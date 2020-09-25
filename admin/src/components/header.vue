@@ -17,23 +17,24 @@
         <md-icon>refresh</md-icon>
       </md-button>
 
-      <span class="md-title">{ my project }</span>     
+      <span class="md-title" v-if="isItRoute">{{ projectName }}</span>
     </md-toolbar>
 
     <md-dialog :md-active.sync="showImageDialog">
       <md-dialog-title>Upload Screens</md-dialog-title>
-      <form enctype="multipart/form-data" novalidate>
+      <form enctype="multipart/form-data" novalidate v-on:submit.prevent="saveSceens">
+      <!-- @change="handleImages($event.target.files)" -->
         <input 
           type="file" 
           name="uploadFieldName" 
-          @change="handleImages($event.target.files)"
-          accept="image/*" 
-          multiple
+          @change="handleUpload($event)"
+          accept="image/*"
+          multiple 
           class="input-file">
       </form>
       <md-dialog-actions>
         <md-button class="md-primary" @click="showImageDialog = false">CLOSE</md-button>
-        <md-button class="md-primary" @click="saveFiles">UPLOAD</md-button>
+        <md-button class="md-primary" type="submit" @click="saveSceens">UPLOAD</md-button>
       </md-dialog-actions>
     </md-dialog>
 
@@ -79,11 +80,16 @@
 </template>
 
 <script>
+import axios from 'axios';
 import API from '../service';
 
 export default {
   name: 'Header',
    props: {
+    projectName: {
+      default: '',
+      type: String,
+    },
     finished: {
       default: 0,
       type: Number,
@@ -92,19 +98,26 @@ export default {
   data: () => ({
     showImageDialog: false,
     showAddProjectDialog: false,
-    newProjectName: '',
     multiple: null,
-    base64ImageList: [],
     showNavigation: false,
-    showSidepanel: false,
     numHotspot: 0,
+    newProjectName: '',
     projectsList: [],
+    urls: [],
+    PROJECT: {},
   }),
    watch: {
     finished() {
       console.log('finished recived');
     },
   },
+
+  computed: {
+    isItRoute() {
+      return ['Project'].indexOf(this.$route.name) > -1;
+    },
+  },
+
   methods: {
     setShowDialog() {
       this.showImageDialog = true;
@@ -116,39 +129,59 @@ export default {
     refresh() {
       // TODO: fetch new information
     },
-    saveFiles() {
+    
+    async saveSceens() {
       this.showImageDialog = false;
-      // TODO: figure out the screen update part
-      this.$emit('screens', this.base64ImageList)
-      API.updateSceen(this.$route.params.id, this.base64ImageList);
+      await API.saveScreens(this.$route.params.id, this.urls);
+      this.$emit('screens')
     },
-    handleImages(files) {
-      Array.from(files).forEach(file =>  this.createBase64Image(file));
-    },
-    createBase64Image(file) {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = e =>{
-          this.base64ImageList.push({ file: e.target.result, name: file.name, uuid: this.uuidv4() });
-      };
-    },
+    
     async addProject() {
-      API.addNewProject(this.newProjectName);
+      const id = await API.addNewProject(this.newProjectName);
       this.projectsList = await API.getAllProjects();
       this.showAddProjectDialog = false;
+      this.showNavigation = false;
       this.newProjectName = '';
+      this.$router.push({ path: `/project/${id}` })
     },
-    // TODO: remove the UUID function, we have MONGODB ids
-    uuidv4() {
-       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) =>  {
-        const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-      });
-    },
+
     async openMenu() {
       this.projectsList = await API.getAllProjects();
       this.showNavigation = true;
     },
+    // CLOUDINARY UPLAOD IMAGES
+    async handleUpload(event) {
+      const files = event.target.files;
+      files.forEach(file => {
+        let reader = new FileReader();
+        const cloudName = 'dunnisf1r';
+        const uploadPreset = 'o5jxetvn';
+
+        reader.addEventListener('load', async function () {
+          let cloudinaryUploadULR = `https://api.cloudinary.com/v1_1/${cloudName}/upload`;
+          let requestObj = {
+            url: cloudinaryUploadULR,
+            method: 'POST',
+            data: {
+              upload_preset: uploadPreset,
+              tags: file.name,
+              file: reader.result,
+            },
+          };
+          
+            const res = await axios(requestObj);
+            this.urls.push({ url: res.data.url, name: file.name, uuid: this.uuidv4() })
+          }.bind(this), false);
+
+          reader.readAsDataURL(file);
+      })
+    },
+    uuidv4() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) =>  {
+      const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  },
   }
 }
 </script>
