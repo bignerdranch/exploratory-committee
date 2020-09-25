@@ -7,7 +7,10 @@
           <md-divider></md-divider>
           <div class="info-wrapper">
             <label class="screen-label">{{ screen.name }}</label>
-            <button class="btn-check-first" @click="markAsFirst(screen.uuid)" :class="{'first': screen.firstScreen}"><md-icon>check_mark</md-icon></button>
+            <button class="btn-check-first" @click="markAsFirst(screen.uuid)" :class="{'first': screen.firstScreen}">
+              <md-icon v-if="screen.firstScreen">first_page</md-icon>
+              <md-icon v-else>info_outline</md-icon>
+            </button>
           </div>
         </md-card>
       </template>
