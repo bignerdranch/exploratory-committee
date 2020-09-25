@@ -118,7 +118,9 @@ export default {
     },
     saveFiles() {
       this.showImageDialog = false;
+      // TODO: figure out the screen update part
       this.$emit('screens', this.base64ImageList)
+      API.updateSceen(this.$route.params.id, this.base64ImageList);
     },
     handleImages(files) {
       Array.from(files).forEach(file =>  this.createBase64Image(file));
@@ -136,6 +138,7 @@ export default {
       this.showAddProjectDialog = false;
       this.newProjectName = '';
     },
+    // TODO: remove the UUID function, we have MONGODB ids
     uuidv4() {
        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) =>  {
         const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);

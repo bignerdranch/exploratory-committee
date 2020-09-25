@@ -56,6 +56,8 @@
 </template>
 
 <script>
+import API from '../service';
+
 export default {
   name: 'Project',
   props: {
@@ -88,7 +90,28 @@ export default {
     targetTransition: '',
     targetTrigger: '',
     currentHotspotEdit: '',
+    PROJECT: null,
   }),
+
+  beforeRouteEnter(to, from, next) {
+    next(async(vm) => {
+      vm.PROJECT = await API.getProject(to.params.id);
+      // RESEY ALL VALUES
+      vm.x1= null;
+      vm.y1= null;
+      vm.x2= null;
+      vm.y2= null;
+      vm.targer= null;
+      vm.index= 0;
+      vm.numOfClicks= 0;
+      vm.finishedDrawing= 0;
+      vm.listOfTargets= [];
+      vm.screensWithHotspots= [];
+      vm.currentParent= '';
+      vm.showMenu= false;
+    });
+  },
+
   watch: {
     hotspot() {
       this.listeners();
@@ -112,6 +135,7 @@ export default {
       }
     }
   },
+
   methods: {
     startHotspot(parentScreen) {
       this.x1 = null;
