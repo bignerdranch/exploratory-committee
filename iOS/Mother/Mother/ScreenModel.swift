@@ -29,14 +29,15 @@ struct Rect: Codable {
 }
 struct Hotspot: Codable {
     let rect: Rect
-    let target: UUID
+    let target: String
     let transition: Transition
     let trigger: Trigger
 }
 struct Screen: Codable {
-    let uuid: UUID
-    let imageData: Data
-    let hotspots: [Hotspot]
+    let uuid: String
+    let url: String
+    let name: String
+    let hotspots: [Hotspot]?
 }
 struct Project: Codable {
     let _id: String
@@ -46,7 +47,7 @@ struct Project: Codable {
 }
 
 extension Project {
-    func screen(with id: UUID) -> Screen? {
+    func screen(with id: String) -> Screen? {
         for scr in screens {
             if scr.uuid == id { return scr }
         }

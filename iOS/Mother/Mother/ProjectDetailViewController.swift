@@ -47,6 +47,18 @@ class ProjectDetailViewController: UITableViewController {
             return project?.screens.count ?? 0
         }
     }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return self.tableView(tableView, estimatedHeightForRowAt: indexPath)
+    }
+    
+    override func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        guard let sec = Section(rawValue: indexPath.section) else { preconditionFailure("NEVER") }
+        switch sec {
+        case .detail: return 44
+        case .screens: return 100
+        }
+    }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let sec = Section(rawValue: indexPath.section) else { preconditionFailure("NEVER") }
@@ -67,11 +79,27 @@ class ProjectDetailViewController: UITableViewController {
                 cell.detailTextLabel?.text = "\(project?.screens.count ?? 0)"
             default: break
             }
-          
-            
             return cell
         case .screens:
             let cell = tableView.dequeueReusableCell(withIdentifier: "screen")!
+            if let screen = project?.screens[indexPath.row] {
+                cell.textLabel?.text = screen.name
+                cell.textLabel?.numberOfLines = 0
+                cell.detailTextLabel?.text = nil
+                let iv = UIImageView()
+                iv.contentMode = .scaleAspectFill
+                iv.translatesAutoresizingMaskIntoConstraints = false
+                cell.accessoryView = iv
+                if let url = URL(string: screen.url) {
+                    ImageStore.shared.image(for: url) { image in
+                        DispatchQueue.main.async {
+                            iv.image = image
+                            iv.widthAnchor.constraint(equalToConstant: 60.0).isActive = true
+                            iv.heightAnchor.constraint(equalTo: cell.heightAnchor, multiplier: 1.0, constant: -4.0).isActive = true
+                        }
+                    }
+                }
+            }
             return cell
         }
 
@@ -91,7 +119,9 @@ class ProjectDetailViewController: UITableViewController {
     func reallySendToWatch() {
         guard let prj = self.project else { return }
         Communicator.shared.transmitProject(prj) { _ in
-            self.navigationController?.popViewController(animated: true)
+            DispatchQueue.main.async {
+                self.navigationController?.popViewController(animated: true)
+            }
         }
     }
 }

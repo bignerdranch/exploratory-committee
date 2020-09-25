@@ -26,9 +26,9 @@ extension Point: CustomStringConvertible {
         return "(\(x), \(y))"
     }
 }
-extension Screen {
+extension ScreenContainer {
     func hitTest(for point: Point) -> Hotspot? {
-        for hotspot in hotspots {
+        for hotspot in screen.hotspots ?? [] {
             if hotspot.rect.contains(point) {
                 return hotspot
             }
@@ -49,22 +49,34 @@ class ScreenInterfaceController: WKInterfaceController {
 
     var transitioningTo: Hotspot?
     
-    var screen: Screen? {
+    var screen: ScreenContainer? {
         didSet {
-            image.setImage(screen?.hotspotImage)
-            group.setBackgroundImage(screen?.image)
+            populate()
+        }
+    }
+
+    func populate() {
+        if let screen = screen, screen.isValid {
+            group.setBackgroundImage(screen.image)
+            image.setImage(screen.hotspotImage)
+            //            group.setBackgroundImage(screen?.image)
             image.setAlpha(0.0)
         }
+
     }
     
     override func awake(withContext context: Any?) {
         super.awake(withContext: context)
-        print("awake")
+        print("awake \(context)")
 
-        if let screen = context as? Screen {
+        if let screen = context as? ScreenContainer {
+            print("screen!")
             self.screen = screen
-        } else if let project = context as? Project{
-            self.screen = project.screens.first!
+        } else if let project = context as? Project, project.screens.count > 0 {
+            self.screen = ScreenContainer(project.screens.first!, in: project) {
+                print("screen!")
+                self.populate()
+            }
         } else {
             print("ctx")
         }
@@ -73,8 +85,8 @@ class ScreenInterfaceController: WKInterfaceController {
     override func willActivate() {
         super.willActivate()
         
-        if let uuid = self.screen?.uuid {
-            Communicator.report(.present, message: uuid.uuidString)
+        if let uuid = self.screen?.screen.uuid {
+            Communicator.report(.present, message: uuid)
         }
     }
 
@@ -205,7 +217,7 @@ class ScreenInterfaceController: WKInterfaceController {
     func transition(to hotspot: Hotspot, in project: Project) {
         transitioningTo = hotspot
         guard let screen = project.screen(with: hotspot.target) else {
-            NSLog("Error: no screen in project with ID \(hotspot.target.uuidString)")
+            NSLog("Error: no screen in project with ID \(hotspot.target)")
             return
         }
         switch hotspot.transition {

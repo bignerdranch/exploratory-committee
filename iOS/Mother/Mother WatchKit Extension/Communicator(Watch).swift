@@ -56,9 +56,12 @@ extension Communicator: WCSessionDelegate {
     
     func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
         print("WCSession received message \(message)")
-        if let newProjectId = message["newProject"] {
-            replyHandler(["send":newProjectId])
-
+        if let newProjectId = message["newProject"],
+           let data = message["jsonData"] as? Data {
+            let project = try! JSONDecoder().decode(Project.self, from: data) 
+            replyHandler(["ack":newProjectId])
+            currentProject = project
+            NotificationCenter.default.post(name: .newProjectReceived, object: project)
         }
     }
     

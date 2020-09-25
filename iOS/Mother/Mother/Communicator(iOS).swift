@@ -104,16 +104,14 @@ extension Communicator: WCSessionDelegate {
     func transmitProject(_ project: Project, completion: @escaping (Progress) -> Void) {
         logMessage("Transmitting project")
         
+        let jsonData = try! JSONEncoder().encode(project)
         let dataPayload: [String:Any] = [
             "newProject": project._id,
-            "projectUrl": project.url
+            "projectUrl": project.url?.absoluteString ?? "",
+            "jsonData": jsonData
         ]
         
         session.sendMessage(dataPayload, replyHandler: { response in
-            if let uuid = response["send"] as? String,
-               uuid == project._id {
-                completion(self.sendProjectAsFile(project))
-            }
         }, errorHandler: { error in
             self.logMessage("Received error \(error)")
         })
