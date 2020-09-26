@@ -34,6 +34,11 @@
         v-if="isItRoute"
         text-transforma
       >{{ projectName }}</span>
+      <span
+        class="md-title"
+        v-else
+        text-transforma
+      >Geoffrey</span>
     </md-toolbar>
 
     <md-dialog :md-active.sync="showImageDialog">
