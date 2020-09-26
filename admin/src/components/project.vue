@@ -6,7 +6,9 @@
           :key="screen.name"
           class="screen-card"
         >
-        <img :src="screen.url" :uuid="screen.uuid" class="screen"/>
+        <div :id="screen.uuid">
+          <img :src="screen.url" :uuid="screen.uuid" class="screen"/>
+        </div>
           <!-- <single-screen
             :imgUrl="screen.url"
             :key="index"
@@ -207,27 +209,26 @@ export default {
         rec.addEventListener('contextmenu', this.openTriggerMenu, true)
         this.drawRec(this.listOfTargets[this.finishedDrawing]);
 
-        
         const parentScreen = this.currentParent;
         const hotspot = this.listOfTargets[this.finishedDrawing];
 
         const parentElementCoordinates = document.querySelectorAll(`[uuid="${parentScreen}"]`)[0].getBoundingClientRect();
         console.log('*********** DONE **************');
         console.log('parentElement', parentElementCoordinates);
-        const calcX =  this.x1 - parentElementCoordinates.x;
-        const calcY =  this.y1 - parentElementCoordinates.y;
-        const calcWidth = this.x1 - this.x2;
-        const calcHeight = this.y1 - this.y2;
-        console.log('calcWidth', calcWidth);
-        console.log('calcHeight', calcHeight);
-        console.log('calcX', calcX);
-        console.log('calcY', calcY);
+        const calcX =  this.x2 - parentElementCoordinates.left;
+        const calcY =  this.y2 - parentElementCoordinates.top;
+        const calcWidth = Math.abs(this.x2 - this.x1);
+        const calcHeight = Math.abs(this.y2 - this.y1);
         console.log('hotspot', { 
             x1: this.x1,
             y1: this.y1,
             x2: this.x2,
             y2: this.y2,
-            });
+        });
+        console.log('calcWidth', calcWidth);
+        console.log('calcHeight', calcHeight);
+        console.log('calcX', calcX);
+        console.log('calcY', calcY);
         console.log('************************');
 
         const i = this.PROJECT.screens.findIndex(i => i.uuid === parentScreen);
@@ -251,6 +252,7 @@ export default {
   updated() {
     this.$nextTick(() => {
       this.listeners();
+      this.checkHotspotsAndDraw();
       // ================================ PRIORITY NUMBER 2 =========================== //
       // check for hostspots on the screens
       // draw them according to coordinates if they exist
@@ -357,7 +359,9 @@ export default {
     async markAsFirst(uuid) {
       const i = this.PROJECT.screens.findIndex(i => i.uuid === uuid);
       this.PROJECT.screens[i] = { ...this.PROJECT.screens[i], firstScreen: true };
-
+      
+      // TODO
+      // use $set to apply changes without refresh
       this.PROJECT.screens.forEach((part, index) => {
         part['firstScreen'] = false;
         if (i === index) {
@@ -366,6 +370,30 @@ export default {
       });
 
       await API.saveScreens(this.$route.params.id, this.PROJECT.screens);
+    },
+
+    checkHotspotsAndDraw() {
+      this.PROJECT.screens.forEach(screen => {
+        screen.hotspots.forEach(i => {
+          const target = document.createElement('div');
+          target.setAttribute("id", i.id);
+          target.setAttribute("parent", screen.uuid);
+          document.getElementById(screen.uuid).appendChild(target);
+          target.style.border = "1px solid blue";
+          target.style.position = "absolute";
+          target.style.backgroundColor = "rgba(9, 168, 236, 0.42)";
+          target.style.zIndex = "100";
+          // drawing the hotspot
+          console.log('i.x', i.x);
+          console.log('i.y', i.y);
+          console.log('i.width', i.width);
+          console.log('i.heigth', i.height);
+          target.style.left = i.x + 'px';
+          target.style.top = i.y + 'px';
+          target.style.width = i.width + 'px';
+          target.style.height = i.height + 'px';
+        });
+      });
     },
   },
 };
