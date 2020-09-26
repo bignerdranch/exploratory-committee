@@ -14,7 +14,6 @@ router.get('/', async (req, res, next) => {
 });
 
 router.post('/', async (req, res, next) => {
-  console.log('Telemetry', req.body);
   try {
     const telemetry = await Telemetry.create({
       projectId: req.body.projectId,
