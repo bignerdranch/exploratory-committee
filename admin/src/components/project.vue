@@ -6,13 +6,14 @@
           :key="screen.name"
           class="screen-card"
         >
-          <single-screen
+        <img :src="screen.url" :uuid="screen.uuid" class="screen"/>
+          <!-- <single-screen
             :imgUrl="screen.url"
             :key="index"
             :uuid="screen.uuid"
             class="screen"
             @add-hotspot="addHotspot"
-          ></single-screen>
+          ></single-screen> -->
           <md-divider></md-divider>
           <div class="info-wrapper">
             <label class="screen-label">{{ screen.name }}</label>
@@ -103,12 +104,12 @@
 
 <script>
 import API from '../service';
-import SingleScreen from './singleScreen';
+// import SingleScreen from './singleScreen';
 
 export default {
   name: 'Project',
   components: {
-    SingleScreen,
+    // SingleScreen,
   },
   props: {
     screens: {
@@ -140,6 +141,8 @@ export default {
     targetTransition: '',
     targetTrigger: '',
     currentHotspotEdit: '',
+    parentTriggersId: '',
+    hotspotTriggerId: '',
     PROJECT: {},
   }),
 
@@ -147,6 +150,7 @@ export default {
     next(async (vm) => {
       vm.PROJECT = await API.getProject(to.params.id);
       vm.$emit('project-name', vm.PROJECT.name);
+      vm.listeners();
       // RESEY ALL VALUES
       vm.x1 = null;
       vm.y1 = null;
@@ -166,6 +170,7 @@ export default {
   async beforeRouteUpdate(to, from, next) {
     this.PROJECT = await API.getProject(to.params.id);
     this.$emit('project-name', this.PROJECT.name);
+    this.listeners();
     // RESEY ALL VALUES
     this.x1 = null;
     this.y1 = null;
@@ -186,8 +191,8 @@ export default {
   watch: {
     hotspot() {
       // call API 
-      this.listeners();
-      this.index++;
+      // this.listeners();
+      // this.index++;
     },
     async screens() {
       this.PROJECT = await API.getProject(this.$route.params.id);
@@ -197,20 +202,32 @@ export default {
         const rec = this.listOfTargets[this.finishedDrawing];
         rec.addEventListener('contextmenu', this.openTriggerMenu, true)
         this.drawRec(this.listOfTargets[this.finishedDrawing]);
-        const el = this.listOfTargets[this.finishedDrawing];
-        this.screensWithHotspots.push({
-          screen: this.currentParent, hotspot: {
-            id: el.getAttribute('id'),
+        
+        const parentScreen = this.currentParent;
+        const hotspot = this.listOfTargets[this.finishedDrawing];
+
+        const i = this.PROJECT.screens.findIndex(i => i.uuid === parentScreen);
+        const howManyHotspots = this.PROJECT.screens[i].hotspots.length;
+        this.$set(
+          this.PROJECT.screens[i].hotspots,
+          howManyHotspots, 
+          {
+            id: hotspot.getAttribute('id'),
             x1: this.x1,
             y1: this.y1,
             x2: this.x2,
             y2: this.y2,
-          }
-        });
+          });
         this.finishedDrawing++;
         this.numOfClicks = 0;
       }
     }
+  },
+
+  updated() {
+    this.$nextTick(() => {
+      this.listeners();
+    });
   },
 
   methods: {
@@ -218,6 +235,7 @@ export default {
       const i = this.PROJECT.screens.findIndex(i => i.uuid === data.uuid);
       this.$set(this.PROJECT.screens[i].hotspots, this.PROJECT.screens[i].hotspots.length, data.rect);
     },
+
     startHotspot(parentScreen) {
       this.x1 = null;
       this.x2 = null;
@@ -226,6 +244,7 @@ export default {
       this.currentParent = '';
       const target = document.createElement('div');
       target.setAttribute("id", this.uuidv4());
+      target.setAttribute("parent", parentScreen);
       document.getElementById('screen-wrapper').appendChild(target);
       target.style.border = "1px solid blue";
       target.style.position = "absolute";
@@ -250,7 +269,8 @@ export default {
     },
     handlerOnMouseDown(e) {
       if (this.numOfClicks === 0) {
-        this.startHotspot(e.target.currentSrc);
+        const parentScreenUuid = e.target.attributes.uuid.value;
+        this.startHotspot(parentScreenUuid);
       }
       this.numOfClicks++;
       this.x1 = e.clientX;
@@ -267,23 +287,33 @@ export default {
       target.style.height = y4 - y3 + 'px';
     },
     openTriggerMenu(e) {
-      this.currentHotspotEdit = e.srcElement.id
+      this.parentTriggersId = e.target.attributes.parent.value;
+      this.hotspotTriggerId = e.target.attributes.id.value;
       e.preventDefault();
       this.showMenu = true;
     },
-    setActionsOnSpot() {
-      const index = this.screensWithHotspots.findIndex(el => el.hotspot.id === this.currentHotspotEdit);
-      this.screensWithHotspots[index].hotspot['trigger'] = this.targetTrigger;
-      this.screensWithHotspots[index].hotspot['transition'] = this.targetTransition;
-      this.screensWithHotspots[index].hotspot['destination'] = this.targetScreen;
+    async setActionsOnSpot() {
+      const parentIndex = this.PROJECT.screens.findIndex(i => i.uuid === this.parentTriggersId);
+      const hotspotIndex = this.PROJECT.screens[parentIndex].hotspots.findIndex(i => i.id === this.hotspotTriggerId)
+      const updatedHotspot = {...this.PROJECT.screens[parentIndex].hotspots[hotspotIndex],
+          trigger:  this.targetTrigger,
+          transition: this.targetTransition,
+          destination: this.targetScreen,
+        };
+
+      this.$set(this.PROJECT.screens[parentIndex].hotspots, hotspotIndex, updatedHotspot);
+
       // RESET
       this.targetTrigger = '';
       this.targetTransition = '';
       this.targetScreen = '';
       this.currentHotspotEdit = '';
+      this.parentTriggersId = '';
+      this.hotspotTriggerId = '';
       this.showMenu = false;
 
       // CALL API TO UPDATE THE SCREENS
+      await API.saveScreens(this.$route.params.id, this.PROJECT.screens);
     },
     uuidv4() {
       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {

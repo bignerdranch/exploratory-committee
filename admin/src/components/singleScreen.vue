@@ -6,6 +6,7 @@
     @mousedown="mouseDown"
     @mouseup="mouseUp"
     @mousemove="mouseMove"
+    :data="uuid"
     :style="`background-image:url(${imgUrl})`"
   >
   </canvas>
@@ -82,6 +83,9 @@ export default {
     mouseUp() {
       this.drag = false;
       this.submitHotspot();
+
+      // this.$refs.canvas.width = this.rect.w;
+      // this.$refs.canvas.height = this.rect.h;
     },
     mouseMove(e) {
       if (this.drag) {
