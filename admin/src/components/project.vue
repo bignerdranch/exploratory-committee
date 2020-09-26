@@ -96,7 +96,7 @@
       </form>
     </md-dialog>
   </div>
-  <Telemetry  class="telemery"/>
+  <Telemetry  class="telemery" :screens="PROJECT.screens"/>
   </div>
 </template>
 
@@ -130,8 +130,8 @@ export default {
     screensWithHotspots: [],
     currentParent: '',
     showMenu: false,
-    transitionList: ['left', 'right', 'top', 'bottom', 'fade', 'instant'],
-    triggersList: ['swipeleft', 'swiperight', 'swipeup', 'swipedown', 'tap', 'longpress'],
+    transitionList: ['left', 'right', 'top', 'bottom', 'fade', 'instant', 'restart'],
+    triggersList: ['swipeleft', 'swiperight', 'swipeup', 'swipedown', 'tap', 'longpress', 'pause'],
     // FORM
     targetScreen: '',
     targetTransition: '',

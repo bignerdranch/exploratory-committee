@@ -3,6 +3,7 @@ const router = express.Router();
 const Telemetry = require('../models/telemetry');
 
 router.get('/', async (req, res, next) => {
+  console.log('req.query.projectId', req.query.projectId);
   try {
     const telemetry = await Telemetry.find({ projectId: req.query.projectId.toString() });
     console.log('found', telemetry);

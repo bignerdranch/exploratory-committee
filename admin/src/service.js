@@ -23,6 +23,6 @@ export default {
 
   getTelemetry(projectId) {
     return axios.get('http://localhost:3000/telemetry', { params: { projectId } })
-      .then(res => res.data[0]).catch(err => console.log('cant get all projects', err))
+      .then(res => res.data).catch(err => console.log('cant get all projects', err))
   },
 };
