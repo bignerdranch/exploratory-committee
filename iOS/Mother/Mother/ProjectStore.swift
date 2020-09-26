@@ -52,6 +52,7 @@ class ProjectStore: NSObject {
             } else if let data = data {
                 do {
                     let newProjects = try JSONDecoder().decode(Array<Project>.self, from: data)
+                    self._projects = newProjects
                     completion(newProjects, nil)
                 } catch {
                     completion([], error)
@@ -62,6 +63,7 @@ class ProjectStore: NSObject {
         task.resume()
     }
 }
+
 
 extension Project {
     static func demoProject() -> Project {

@@ -155,7 +155,19 @@ struct Project: Codable {
     let _id: String
     let name: String
     let url: URL?
-    let screens: [Screen]
+    var screens: [Screen]
+}
+
+extension Project: Equatable {
+    static func ==(rhs: Project, lhs: Project) -> Bool {
+        return rhs._id == lhs._id && rhs.screens == lhs.screens
+    }
+}
+
+extension Screen: Equatable {
+    static func ==(lhs: Screen, rhs: Screen) -> Bool {
+        return lhs.uuid == rhs.uuid
+    }
 }
 
 extension Project {
@@ -174,7 +186,49 @@ extension Project {
     }
 }
 
+extension Screen {
+    var hotspotTargets: [String] {
+        var targets = [String]()
+        for spot in hotspots ?? [] {
+            targets.append(spot.target)
+        }
+        return targets
+    }
+}
 
+extension Project {
+    mutating func sortScreens() {
+        var newScreenOrder = [Screen]()
+        var oldScreenOrder = self.screens
+        
+        func oldScreen(withId id: String) -> Screen? {
+            return oldScreenOrder.first(where: { $0.uuid == id })
+        }
+        
+        func move(_ screen: Screen) {
+            if let idx = oldScreenOrder.firstIndex(where: { $0.uuid == screen.uuid }) {
+                print("move \(screen.uuid) to \(newScreenOrder.count)")
+                newScreenOrder.append(screen)
+                oldScreenOrder.remove(at: idx)
+                
+                let targets = screen.hotspotTargets
+                for target in targets {
+                    if let sc = oldScreen(withId: target) {
+                        move(sc)
+                    }
+                }
+            }
+        }
+        
+        if let sc = firstScreen() {
+            move(sc)
+        }
+
+        print("Unlinked \(oldScreenOrder.count)")
+        newScreenOrder.append(contentsOf: oldScreenOrder)
+        screens = newScreenOrder
+    }
+}
 /**
  
  

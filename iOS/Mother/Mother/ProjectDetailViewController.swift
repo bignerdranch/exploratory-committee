@@ -15,8 +15,15 @@ class ProjectDetailViewController: UITableViewController {
         case id, name, numberOfScreens
     }
     
+    var screens = [Screen]()
     var project: Project? {
         didSet {
+            if var p = project {
+                p.sortScreens()
+                screens = p.screens
+            } else {
+                screens = []
+            }
             guard isViewLoaded else { return }
             tableView.reloadData()
         }
@@ -44,7 +51,7 @@ class ProjectDetailViewController: UITableViewController {
         case .detail:
             return DetailRow.allCases.count
         case .screens:
-            return project?.screens.count ?? 0
+            return screens.count
         }
     }
     
@@ -76,27 +83,26 @@ class ProjectDetailViewController: UITableViewController {
                 cell.detailTextLabel?.text = project?._id
             case .numberOfScreens:
                 cell.textLabel?.text = "Number of screens"
-                cell.detailTextLabel?.text = "\(project?.screens.count ?? 0)"
+                cell.detailTextLabel?.text = "\(screens.count)"
             default: break
             }
             return cell
         case .screens:
             let cell = tableView.dequeueReusableCell(withIdentifier: "screen")!
-            if let screen = project?.screens[indexPath.row] {
-                cell.textLabel?.text = screen.name
-                cell.textLabel?.numberOfLines = 0
-                cell.detailTextLabel?.text = nil
-                let iv = UIImageView()
-                iv.contentMode = .scaleAspectFill
-                iv.translatesAutoresizingMaskIntoConstraints = false
-                cell.accessoryView = iv
-                if let url = URL(string: screen.url) {
-                    ImageStore.shared.image(for: url) { image in
-                        DispatchQueue.main.async {
-                            iv.image = image
-                            iv.widthAnchor.constraint(equalToConstant: 60.0).isActive = true
-                            iv.heightAnchor.constraint(equalTo: cell.heightAnchor, multiplier: 1.0, constant: -4.0).isActive = true
-                        }
+            let screen = screens[indexPath.row]
+            cell.textLabel?.text = screen.name
+            cell.textLabel?.numberOfLines = 0
+            cell.detailTextLabel?.text = nil
+            let iv = UIImageView()
+            iv.contentMode = .scaleAspectFill
+            iv.translatesAutoresizingMaskIntoConstraints = false
+            cell.accessoryView = iv
+            if let url = URL(string: screen.url) {
+                ImageStore.shared.image(for: url) { image in
+                    DispatchQueue.main.async {
+                        iv.image = image
+                        iv.widthAnchor.constraint(equalToConstant: 60.0).isActive = true
+                        iv.heightAnchor.constraint(equalTo: cell.heightAnchor, multiplier: 1.0, constant: -4.0).isActive = true
                     }
                 }
             }
