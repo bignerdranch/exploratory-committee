@@ -13,7 +13,7 @@ class RootInterfaceController: WKInterfaceController {
     @IBOutlet weak var imageView: WKInterfaceImage!
     
     override func awake(withContext context: Any?) {
-//        let session = Communicator.shared.session
+        let session = Communicator.shared.session
         // Configure interface objects here.
         NotificationCenter.default.addObserver(forName: .newProjectReceived, object: nil, queue: .main) { note in
             if let prj = note.object as? Project {
@@ -26,12 +26,14 @@ class RootInterfaceController: WKInterfaceController {
         NotificationCenter.default.addObserver(forName: .newProjectComing, object: nil, queue: .main) { note in
             self.popToRootController()
             self.imageView.setImageNamed("loading")
-            self.imageView.startAnimating()
+            self.imageView.startAnimatingWithImages(in: NSMakeRange(0, 8), duration: 1.0, repeatCount: -1)
         }
         print("Observer added.")
     }
     
     override func willActivate() {
+        print("Hello!")
+        super.willActivate()
         // This method is called when watch view controller is about to be visible to user
     }
     

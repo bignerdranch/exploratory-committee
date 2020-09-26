@@ -31,6 +31,7 @@
 		0EBBAB58251CC46700B04837 /* ScreenInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EBBAB57251CC46700B04837 /* ScreenInterfaceController.swift */; };
 		0EBBAB5D251CD3F800B04837 /* Communicator(Watch).swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EBBAB5C251CD3F800B04837 /* Communicator(Watch).swift */; };
 		0ECBC82B251CE6E300017902 /* ProjectListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ECBC82A251CE6E300017902 /* ProjectListViewController.swift */; };
+		0ECEBB36251F4888003EB956 /* Telemetry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ECEBB35251F4888003EB956 /* Telemetry.swift */; };
 		0EF94FEE251E706400F260DD /* ProjectDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EF94FED251E706400F260DD /* ProjectDetailViewController.swift */; };
 		0EF94FFA251E908C00F260DD /* ImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EF94FF2251E902500F260DD /* ImageStore.swift */; };
 /* End PBXBuildFile section */
@@ -104,6 +105,7 @@
 		0EBBAB57251CC46700B04837 /* ScreenInterfaceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenInterfaceController.swift; sourceTree = "<group>"; };
 		0EBBAB5C251CD3F800B04837 /* Communicator(Watch).swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Communicator(Watch).swift"; sourceTree = "<group>"; };
 		0ECBC82A251CE6E300017902 /* ProjectListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectListViewController.swift; sourceTree = "<group>"; };
+		0ECEBB35251F4888003EB956 /* Telemetry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Telemetry.swift; sourceTree = "<group>"; };
 		0EF94FED251E706400F260DD /* ProjectDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectDetailViewController.swift; sourceTree = "<group>"; };
 		0EF94FF2251E902500F260DD /* ImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -188,6 +190,7 @@
 				0EBBAB57251CC46700B04837 /* ScreenInterfaceController.swift */,
 				0EBBAB5C251CD3F800B04837 /* Communicator(Watch).swift */,
 				0EF94FF2251E902500F260DD /* ImageStore.swift */,
+				0ECEBB35251F4888003EB956 /* Telemetry.swift */,
 			);
 			path = "Mother WatchKit Extension";
 			sourceTree = "<group>";
@@ -341,6 +344,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0EBBAB2F251C086D00B04837 /* ExtensionDelegate.swift in Sources */,
+				0ECEBB36251F4888003EB956 /* Telemetry.swift in Sources */,
 				0EBBAB58251CC46700B04837 /* ScreenInterfaceController.swift in Sources */,
 				0EBBAB5D251CD3F800B04837 /* Communicator(Watch).swift in Sources */,
 				0EF94FFA251E908C00F260DD /* ImageStore.swift in Sources */,

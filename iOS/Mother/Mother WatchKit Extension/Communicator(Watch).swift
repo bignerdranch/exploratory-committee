@@ -38,7 +38,15 @@ extension Communicator: WCSessionDelegate {
         }
         print("WCSession activation state = \(activationState.rawValue)")
         if activationState == .activated {
-            NotificationCenter.default.post(name: .sessionActivated, object: session)
+            if !session.isReachable {
+                print("WCSession is not reachable")
+            } else if session.isCompanionAppInstalled {
+                print("WCSession found the companion app")
+                NotificationCenter.default.post(name: .sessionActivated, object: session)
+            } else {
+                print("WCSession did not find a watch app")
+            }
+            
         }
     }
     

@@ -73,7 +73,8 @@ class ScreenInterfaceController: WKInterfaceController {
             print("screen!")
             self.screen = screen
         } else if let project = context as? Project, project.screens.count > 0 {
-            self.screen = ScreenContainer(project.screens.first!, in: project) {
+            
+            self.screen = ScreenContainer(project.firstScreen()!, in: project) {
                 print("screen!")
                 self.populate()
             }

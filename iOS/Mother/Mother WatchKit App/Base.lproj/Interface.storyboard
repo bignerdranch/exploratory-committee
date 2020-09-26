@@ -12,12 +12,14 @@
             <objects>
                 <controller identifier="root" id="AgC-eL-Hgc" customClass="RootInterfaceController" customModule="Geoffrey_Watch" customModuleProvider="target">
                     <items>
-                        <group width="1" alignment="left" layout="vertical" id="fp1-vf-vYu">
+                        <group width="1" alignment="center" layout="vertical" id="fp1-vf-vYu">
                             <items>
+                                <imageView alignment="center" id="l40-P6-nBR">
+                                    <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </imageView>
                                 <label width="1" alignment="left" text="Launch the parent app on your phone to control me." textAlignment="center" numberOfLines="0" minimumScaleFactor="0.80000000000000004" id="gws-8Q-9FI"/>
                             </items>
                         </group>
-                        <imageView alignment="left" id="l40-P6-nBR"/>
                     </items>
                     <connections>
                         <outlet property="imageView" destination="l40-P6-nBR" id="WbY-1H-ptl"/>

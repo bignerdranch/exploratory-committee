@@ -84,28 +84,28 @@ extension Project {
 
         let wholeScreen = Rect(origin: Point(x: 0, y: 0), size: Size(width: 368, height: 448))
         
-        let sq1 = Screen(uuid: sq1uuid, url: "", name: "", hotspots: [
+        let sq1 = Screen(uuid: sq1uuid, url: "", name: "", firstScreen: true, hotspots: [
             Hotspot(rect: Rect(origin: Point(x: 10, y: 130), size: Size(width: 360, height: 100)), target: sq2uuid, transition: .fromRight, trigger: .tap),
         ])
-        let sq2 = Screen(uuid: sq2uuid, url: "", name: "", hotspots: [
+        let sq2 = Screen(uuid: sq2uuid, url: "", name: "", firstScreen: false, hotspots: [
             Hotspot(rect: Rect(origin: Point(x: 10, y: 240), size: Size(width: 360, height: 90)), target: sq3uuid, transition: .fromLeft, trigger: .tap),
         ])
-        let sq3 = Screen(uuid: sq3uuid, url: "", name: "", hotspots: [
+        let sq3 = Screen(uuid: sq3uuid, url: "", name: "", firstScreen: false, hotspots: [
             Hotspot(rect: Rect(origin: Point(x: 10, y: 460), size: Size(width: 360, height: 100)), target: sq4uuid, transition: .fromRight, trigger: .tap),
         ])
-        let sq4 = Screen(uuid: sq4uuid, url: "", name: "", hotspots: [
+        let sq4 = Screen(uuid: sq4uuid, url: "", name: "", firstScreen: false, hotspots: [
             Hotspot(rect: Rect(origin: Point(x: 10, y: 140), size: Size(width: 340, height: 140)), target: sq5uuid, transition: .fromRight, trigger: .tap),
         ])
-        let sq5 = Screen(uuid: sq5uuid, url: "", name: "", hotspots: [
+        let sq5 = Screen(uuid: sq5uuid, url: "", name: "", firstScreen: false, hotspots: [
             Hotspot(rect: wholeScreen, target: sq6uuid, transition: .fromRight, trigger: .tap),
         ])
-        let sq6 = Screen(uuid: sq6uuid, url: "", name: "", hotspots: [
+        let sq6 = Screen(uuid: sq6uuid, url: "", name: "", firstScreen: false, hotspots: [
             Hotspot(rect: wholeScreen, target: sq7uuid, transition: .fromRight, trigger: .tap),
         ])
-        let sq7 = Screen(uuid: sq7uuid, url: "", name: "", hotspots: [
+        let sq7 = Screen(uuid: sq7uuid, url: "", name: "", firstScreen: false, hotspots: [
             Hotspot(rect: wholeScreen, target: sq8uuid, transition: .fromRight, trigger: .tap),
         ])
-        let sq8 = Screen(uuid: sq8uuid, url: "", name: "", hotspots: [
+        let sq8 = Screen(uuid: sq8uuid, url: "", name: "", firstScreen: false, hotspots: [
             Hotspot(rect: wholeScreen, target: sq1uuid, transition: .fromRight, trigger: .tap),
         ])
         let url = URL(string: "https://www.google.com/")!

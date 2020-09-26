@@ -39,13 +39,15 @@ class ScreenContainer {
     init(_ screen: Screen, in project: Project, completion: @escaping () -> Void) {
         self.screen = screen
         self.project = project
-        ImageStore.shared.image(for: URL(string: screen.url)!) { imageOrNil in
-            if let image = imageOrNil {
-                self.image = image
-                self.hotspotImage = self.hotspotImage(for: image)
-                self.isValid = true
+        if let url = URL(string: screen.url) {
+            ImageStore.shared.image(for: url) { imageOrNil in
+                if let image = imageOrNil {
+                    self.image = image
+                    self.hotspotImage = self.hotspotImage(for: image)
+                    self.isValid = true
+                }
+                completion()
             }
-            completion()
         }
     }
 
