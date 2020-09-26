@@ -11,7 +11,9 @@
             <label>{{screenName(info.currentScreen)[0].name}}</label>
             <br>
             <label>User clicked on:</label>
-            <div class="box">
+            <div class="box" 
+            >
+            <img :src="findImage(info.currentScreen)"/>
               <div class="dot" 
                 :style="`top: ${info.positionY * 100}%; left: ${info.positionX * 100}%`"
                 ></div>
@@ -20,7 +22,7 @@
           </div>
           </template>
         </template>
-        <img src="../assets/Series 4 - 40mm - Space Gray Copy 3@2x.png"/>
+        <img class="hero" src="../assets/Series 4 - 40mm - Space Gray Copy 3@2x.png"/>
       </md-card-content>
     </md-card>
   </div>  
@@ -56,11 +58,10 @@ export default {
     screenName(uuid) {
       return this.screens.filter(i => (i.uuid === uuid));
     },
-    calcDirection(info) {
-      console.log('info', info);
-      const parent = this.screens.filter(i => (i.uuid === info.currentScreen));
-      console.log('parent', parent);
-    }
+    findImage(uuid) {
+      return this.screens.filter(i => (i.uuid === uuid))[0].url;
+    },
+
   },
 }
 </script>
@@ -76,8 +77,7 @@ export default {
     overflow-y: auto;
     white-space: nowrap;
 
-
-    img {
+    .hero {
       height: 300px;
       padding-top: 30px;
     }
@@ -86,12 +86,21 @@ export default {
       margin: 10px 0;
     }
   }
+
   .box {
     width: 100px;
     height: 100px;
     background-color: white;
     border: 1px solid grey;
     position: relative;
+    // background-size: contain;
+    img {
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      width: 100%;
+      height: 100%;
+    }
   }
 
   .dot {
