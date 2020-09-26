@@ -11,6 +11,7 @@ const connectionString = "mongodb+srv://budaminof:Jesus212!@cluster0.g2ll0.mongo
 
 var indexRouter = require('./routes/index');
 var screens = require('./routes/screens');
+var telemetry = require('./routes/telemetry');
 
 var app = express();
 
@@ -30,6 +31,7 @@ mongoose.connect(connectionString, {
   useUnifiedTopology: true,
 });
 
+app.use('/telemetry', telemetry);
 app.use('/screens', screens);
 app.use('/', indexRouter);
 
