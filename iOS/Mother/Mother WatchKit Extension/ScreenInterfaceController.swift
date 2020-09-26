@@ -171,7 +171,7 @@ class ScreenInterfaceController: WKInterfaceController {
         if let hotspot = hitTest(for: scaledPoint, with: .tap) {
             guard let id = screen?.screen.uuid,
                   let project = screen?.project else { return }
-            let telemetryPoint = Point(x: point.x / Double(imageSize.width), y: point.y / Double(imageSize.height))
+            let telemetryPoint = Point(x: scaledPoint.x / Double(imageSize.width), y: scaledPoint.y / Double(imageSize.height))
             Telemetry.report(.tap, at: telemetryPoint, on: id, in: project._id, leadingTo: hotspot.target)
             transition(to: hotspot, in: Communicator.shared.currentProject!)
         } else {
@@ -240,7 +240,6 @@ class ScreenInterfaceController: WKInterfaceController {
         let deviceSize = WKInterfaceDevice.current().screenBounds
         let scale =  Double(imageSize.width / deviceSize.width)
         let scaledPoint = Point(x: point.x * scale, y: point.y * scale)
-
         Communicator.report(.swipeDown, message: point.description)
         if let hotspot = hitTest(for: scaledPoint, with: .swipeDown) {
             guard let id = screen?.screen.uuid,
@@ -290,10 +289,17 @@ class ScreenInterfaceController: WKInterfaceController {
                 self.pushController(withName: "screen", context: container)
                 break
             case .fromTop:
+                self.pushController(withName: "screen", context: container)
                 break
             case .fromBottom:
+                self.pushController(withName: "screen", context: container)
                 break
             case .fade:
+                break
+            case .restart:
+                NotificationCenter.default.post(name: .newProjectReceived, object: project)
+                self.popToRootController()
+                self.pushController(withName: "screen", context: container)
                 break
             case .instant:
                 break

@@ -9,7 +9,7 @@ import UIKit
 
 enum Transition: String, Codable {
     case fromLeft, fromRight, fromTop, fromBottom
-    case fade, instant
+    case fade, instant, restart
     static func from(_ string: String) -> Transition {
         switch string {
         case "left": return .fromLeft
@@ -18,6 +18,7 @@ enum Transition: String, Codable {
         case "down": return .fromTop
         case "instant": return .instant
         case "fade": return .fade
+        case "restart": return .restart
         default: return .fromRight
         }
     }
