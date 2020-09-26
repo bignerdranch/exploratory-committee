@@ -164,6 +164,8 @@ export default {
       vm.screensWithHotspots = [];
       vm.currentParent = '';
       vm.showMenu = false;
+      vm.parentTriggersId = '';
+      vm.hotspotTriggerId = '';
     });
   },
 
@@ -184,6 +186,8 @@ export default {
     this.screensWithHotspots = [];
     this.currentParent = '';
     this.showMenu = false;
+    this.parentTriggersId = '';
+    this.hotspotTriggerId = '';
 
     next();
   },
@@ -202,9 +206,29 @@ export default {
         const rec = this.listOfTargets[this.finishedDrawing];
         rec.addEventListener('contextmenu', this.openTriggerMenu, true)
         this.drawRec(this.listOfTargets[this.finishedDrawing]);
+
         
         const parentScreen = this.currentParent;
         const hotspot = this.listOfTargets[this.finishedDrawing];
+
+        const parentElementCoordinates = document.querySelectorAll(`[uuid="${parentScreen}"]`)[0].getBoundingClientRect();
+        console.log('*********** DONE **************');
+        console.log('parentElement', parentElementCoordinates);
+        const calcX =  this.x1 - parentElementCoordinates.x;
+        const calcY =  this.y1 - parentElementCoordinates.y;
+        const calcWidth = this.x1 - this.x2;
+        const calcHeight = this.y1 - this.y2;
+        console.log('calcWidth', calcWidth);
+        console.log('calcHeight', calcHeight);
+        console.log('calcX', calcX);
+        console.log('calcY', calcY);
+        console.log('hotspot', { 
+            x1: this.x1,
+            y1: this.y1,
+            x2: this.x2,
+            y2: this.y2,
+            });
+        console.log('************************');
 
         const i = this.PROJECT.screens.findIndex(i => i.uuid === parentScreen);
         const howManyHotspots = this.PROJECT.screens[i].hotspots.length;
@@ -213,10 +237,10 @@ export default {
           howManyHotspots, 
           {
             id: hotspot.getAttribute('id'),
-            x1: this.x1,
-            y1: this.y1,
-            x2: this.x2,
-            y2: this.y2,
+            x: calcX,
+            y: calcY,
+            width: calcWidth,
+            height: calcHeight,
           });
         this.finishedDrawing++;
         this.numOfClicks = 0;
