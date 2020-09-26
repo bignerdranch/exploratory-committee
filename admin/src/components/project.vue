@@ -48,7 +48,7 @@
                 <option></option>
                 <template v-for="(screen, index) in PROJECT.screens">
                   <option
-                    :value="screen.name"
+                    :value="screen.uuid"
                     :key="index"
                   >{{ screen.name }}</option>
                 </template>
