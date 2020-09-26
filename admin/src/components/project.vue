@@ -1,7 +1,8 @@
 <template>
-  <div>
-    <div id="screen-wrapper">
-      <template v-for="(screen) in PROJECT.screens">
+  <div class="container">
+    <div class="side1">
+      <div id="screen-wrapper">
+        <template v-for="(screen) in PROJECT.screens">
         <md-card
           :key="screen.name"
           class="screen-card"
@@ -95,13 +96,17 @@
       </form>
     </md-dialog>
   </div>
+  <Telemetry  class="telemery"/>
+  </div>
 </template>
 
 <script>
 import API from '../service';
+import Telemetry from './telemetry';
 
 export default {
   name: 'Project',
+  components: { Telemetry },
   props: {
     screens: {
       default: 0,
@@ -372,6 +377,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.container {
+  display: flex;
+  flex-direction: row;
+
+  .side1 {
+    flex: 1;
+  }
+}
 .screen-wrapper {
   overflow-x: scroll;
   overflow-y: hidden;

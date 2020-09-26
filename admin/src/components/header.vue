@@ -32,6 +32,7 @@
       <span
         class="md-title"
         v-if="isItRoute"
+        text-transforma
       >{{ projectName }}</span>
     </md-toolbar>
 
@@ -115,7 +116,7 @@
 
         <template v-for="(item, index) in projectsList">
           <router-link
-            :key=index
+            :key="index"
             :to="{ name: 'Project', params: { id: item._id } }"
           >
             <md-list-item>
@@ -243,6 +244,7 @@ export default {
 
   .md-title {
     flex: 1;
+    text-transform: capitalize;
   }
 }
 
