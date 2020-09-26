@@ -4,7 +4,8 @@ const Telemetry = require('../models/telemetry');
 
 router.get('/', async (req, res, next) => {
   try {
-    const telemetry = await Telemetry.find({ projectId: req.query.projectId });
+    const telemetry = await Telemetry.find({ projectId: req.query.projectId.toString() });
+    console.log('found', telemetry);
     return res.send(telemetry);
   } catch (err) {
     console.log('err', err);
