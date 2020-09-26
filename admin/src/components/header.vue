@@ -17,7 +17,7 @@
 
       <md-button
         class="md-icon-button"
-        @click="AddHotspot()"
+        @click="AddHotspots()"
       >
         <md-icon>aspect_ratio</md-icon>
       </md-button>
@@ -172,9 +172,9 @@ export default {
       this.showImageDialog = true;
     },
 
-    AddHotspot() {
+    AddHotspots() {
       this.numHotspot++;
-      this.$emit('hotspot', this.numHotspot)
+      this.$emit('save-hotspot', this.numHotspot)
     },
 
     refresh() {

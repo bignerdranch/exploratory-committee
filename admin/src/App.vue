@@ -1,7 +1,7 @@
 
 <template>
   <div id="app">
-    <Header @screens="setScreens" @hotspot="setHotspot" :finished="finished" :projectName="projectName" />
+    <Header @screens="setScreens" @save-hotspot="setHotspot" :finished="finished" :projectName="projectName" />
     <router-view  
       :screens="screens" 
       :hotspot="hotspot" 

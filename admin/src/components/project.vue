@@ -9,13 +9,6 @@
         <div :id="screen.uuid">
           <img :src="screen.url" :uuid="screen.uuid" class="screen"/>
         </div>
-          <!-- <single-screen
-            :imgUrl="screen.url"
-            :key="index"
-            :uuid="screen.uuid"
-            class="screen"
-            @add-hotspot="addHotspot"
-          ></single-screen> -->
           <md-divider></md-divider>
           <div class="info-wrapper">
             <label class="screen-label">{{ screen.name }}</label>
@@ -106,13 +99,9 @@
 
 <script>
 import API from '../service';
-// import SingleScreen from './singleScreen';
 
 export default {
   name: 'Project',
-  components: {
-    // SingleScreen,
-  },
   props: {
     screens: {
       default: 0,
@@ -195,10 +184,8 @@ export default {
   },
 
   watch: {
-    hotspot() {
-      // call API 
-      // this.listeners();
-      // this.index++;
+    async hotspot() {
+      await API.saveScreens(this.$route.params.id, this.PROJECT.screens);
     },
     async screens() {
       this.PROJECT = await API.getProject(this.$route.params.id);
@@ -211,25 +198,13 @@ export default {
 
         const parentScreen = this.currentParent;
         const hotspot = this.listOfTargets[this.finishedDrawing];
-
         const parentElementCoordinates = document.querySelectorAll(`[uuid="${parentScreen}"]`)[0].getBoundingClientRect();
-        console.log('*********** DONE **************');
-        console.log('parentElement', parentElementCoordinates);
+        const parentWidth = parentElementCoordinates.width;
+        const parentHeigth = parentElementCoordinates.height;
         const calcX =  this.x2 - parentElementCoordinates.left;
         const calcY =  this.y2 - parentElementCoordinates.top;
         const calcWidth = Math.abs(this.x2 - this.x1);
         const calcHeight = Math.abs(this.y2 - this.y1);
-        console.log('hotspot', { 
-            x1: this.x1,
-            y1: this.y1,
-            x2: this.x2,
-            y2: this.y2,
-        });
-        console.log('calcWidth', calcWidth);
-        console.log('calcHeight', calcHeight);
-        console.log('calcX', calcX);
-        console.log('calcY', calcY);
-        console.log('************************');
 
         const i = this.PROJECT.screens.findIndex(i => i.uuid === parentScreen);
         const howManyHotspots = this.PROJECT.screens[i].hotspots.length;
@@ -238,10 +213,14 @@ export default {
           howManyHotspots, 
           {
             id: hotspot.getAttribute('id'),
-            x: calcX,
-            y: calcY,
-            width: calcWidth,
-            height: calcHeight,
+            xWeb: calcX,
+            yWeb: calcY,
+            widthWeb: calcWidth,
+            heightWeb: calcHeight,
+            x: calcX / parentWidth,
+            y: calcY / parentHeigth,
+            width: calcWidth / parentWidth,
+            height: calcHeight / parentHeigth,
           });
         this.finishedDrawing++;
         this.numOfClicks = 0;
@@ -252,14 +231,19 @@ export default {
   updated() {
     this.$nextTick(() => {
       this.listeners();
+      this.removeOldBoxes();
       this.checkHotspotsAndDraw();
-      // ================================ PRIORITY NUMBER 2 =========================== //
-      // check for hostspots on the screens
-      // draw them according to coordinates if they exist
     });
   },
 
   methods: {
+    removeOldBoxes() {
+      const boxes = [...document.getElementsByClassName('hotspot')];
+      boxes.forEach((box, i) => {
+        console.log(box);
+        box.parentNode.removeChild(boxes[i]);
+      });
+    },
     addHotspot(data) {
       const i = this.PROJECT.screens.findIndex(i => i.uuid === data.uuid);
       this.$set(this.PROJECT.screens[i].hotspots, this.PROJECT.screens[i].hotspots.length, data.rect);
@@ -274,6 +258,7 @@ export default {
       const target = document.createElement('div');
       target.setAttribute("id", this.uuidv4());
       target.setAttribute("parent", parentScreen);
+      target.setAttribute("class", "hotspot");
       document.getElementById('screen-wrapper').appendChild(target);
       target.style.border = "1px solid blue";
       target.style.position = "absolute";
@@ -306,9 +291,6 @@ export default {
       this.y1 = e.clientY;
     },
     drawRec(target) {
-      // ================================ PRIORITY NUMBER 1 =========================== //
-      // current location is on the window 
-      // calc location relative to image borders
       var x3 = Math.min(this.x1, this.x2);
       var x4 = Math.max(this.x1, this.x2);
       var y3 = Math.min(this.y1, this.y2);
@@ -342,12 +324,6 @@ export default {
       this.parentTriggersId = '';
       this.hotspotTriggerId = '';
       this.showMenu = false;
-      
-      // ================================ PRIORITY NUMBER 3 =========================== //
-      // emit event listener from header button
-      // pass arg as props from APP
-      // watch for props to call API to save all changes made on the screens.
-      await API.saveScreens(this.$route.params.id, this.PROJECT.screens);
     },
     uuidv4() {
       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
@@ -384,14 +360,10 @@ export default {
           target.style.backgroundColor = "rgba(9, 168, 236, 0.42)";
           target.style.zIndex = "100";
           // drawing the hotspot
-          console.log('i.x', i.x);
-          console.log('i.y', i.y);
-          console.log('i.width', i.width);
-          console.log('i.heigth', i.height);
-          target.style.left = i.x + 'px';
-          target.style.top = i.y + 'px';
-          target.style.width = i.width + 'px';
-          target.style.height = i.height + 'px';
+          target.style.left = i.xWeb + 'px';
+          target.style.top = i.yWeb + 'px';
+          target.style.width = i.widthWeb + 'px';
+          target.style.height = i.heightWeb + 'px';
         });
       });
     },
