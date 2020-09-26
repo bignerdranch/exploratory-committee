@@ -20,4 +20,9 @@ export default {
     return axios.post('https://immense-bastion-45421.herokuapp.com/screens', { id, screens })
       .then(res => res).catch(err => console.log('could not add new project', err))
   },
+
+  getTelemetry(projectId) {
+    return axios.get('http://localhost:3000/telemetry', { params: { projectId } })
+      .then(res => res.data[0]).catch(err => console.log('cant get all projects', err))
+  },
 };
