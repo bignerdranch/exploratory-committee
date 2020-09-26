@@ -156,12 +156,10 @@ class ScreenInterfaceController: WKInterfaceController {
     @IBAction func didTap(_ sender: WKTapGestureRecognizer) {
         let point = sender.point
         let deviceSize = WKInterfaceDevice.current().screenBounds
-        
         let scale =  Double(imageSize.width / deviceSize.width)
         let scaledPoint = Point(x: point.x * scale, y: point.y * scale)
-        
         print("tap \(scaledPoint)")
-        
+
         Communicator.report(.tap, message: point.description)
         
         if didTapHomeArea(point) {
@@ -171,6 +169,10 @@ class ScreenInterfaceController: WKInterfaceController {
         }
         
         if let hotspot = hitTest(for: scaledPoint, with: .tap) {
+            guard let id = screen?.screen.uuid,
+                  let project = screen?.project else { return }
+            let telemetryPoint = Point(x: point.x / Double(imageSize.width), y: point.y / Double(imageSize.height))
+            Telemetry.report(.tap, at: telemetryPoint, on: id, in: project._id, leadingTo: hotspot.target)
             transition(to: hotspot, in: Communicator.shared.currentProject!)
         } else {
             flashHotspots()
@@ -184,8 +186,15 @@ class ScreenInterfaceController: WKInterfaceController {
     
     @IBAction func didSwipeRight(_ sender: WKSwipeGestureRecognizer) {
         let point = sender.point
+        let deviceSize = WKInterfaceDevice.current().screenBounds
+        let scale =  Double(imageSize.width / deviceSize.width)
+        let scaledPoint = Point(x: point.x * scale, y: point.y * scale)
+
         Communicator.report(.swipeRight, message: point.description)
-        if let hotspot = hitTest(for: point, with: .swipeRight) {
+        if let hotspot = hitTest(for: scaledPoint, with: .swipeRight) {
+            guard let id = screen?.screen.uuid,
+                  let project = screen?.project else { return }
+            Telemetry.report(.swipeRight, at: scaledPoint, on: id, in: project._id, leadingTo: hotspot.target)
             transition(to: hotspot, in: Communicator.shared.currentProject!)
         } else {
             flashHotspots()
@@ -194,8 +203,15 @@ class ScreenInterfaceController: WKInterfaceController {
     
     @IBAction func didSwipeLeft(_ sender: WKSwipeGestureRecognizer) {
         let point = sender.point
+        let deviceSize = WKInterfaceDevice.current().screenBounds
+        let scale =  Double(imageSize.width / deviceSize.width)
+        let scaledPoint = Point(x: point.x * scale, y: point.y * scale)
+
         Communicator.report(.swipeLeft, message: point.description)
-        if let hotspot = hitTest(for: point, with: .swipeLeft) {
+        if let hotspot = hitTest(for: scaledPoint, with: .swipeLeft) {
+            guard let id = screen?.screen.uuid,
+                  let project = screen?.project else { return }
+            Telemetry.report(.swipeLeft, at: scaledPoint, on: id, in: project._id, leadingTo: hotspot.target)
             transition(to: hotspot, in: Communicator.shared.currentProject!)
         } else {
             flashHotspots()
@@ -204,8 +220,15 @@ class ScreenInterfaceController: WKInterfaceController {
     
     @IBAction func didSwipeUp(_ sender: WKSwipeGestureRecognizer) {
         let point = sender.point
+        let deviceSize = WKInterfaceDevice.current().screenBounds
+        let scale =  Double(imageSize.width / deviceSize.width)
+        let scaledPoint = Point(x: point.x * scale, y: point.y * scale)
+
         Communicator.report(.swipeUp, message: point.description)
-        if let hotspot = hitTest(for: point, with: .swipeUp) {
+        if let hotspot = hitTest(for: scaledPoint, with: .swipeUp) {
+            guard let id = screen?.screen.uuid,
+                  let project = screen?.project else { return }
+            Telemetry.report(.swipeUp, at: scaledPoint, on: id, in: project._id, leadingTo: hotspot.target)
             transition(to: hotspot, in: Communicator.shared.currentProject!)
         } else {
             flashHotspots()
@@ -214,8 +237,15 @@ class ScreenInterfaceController: WKInterfaceController {
     
     @IBAction func didSwipeDown(_ sender: WKSwipeGestureRecognizer) {
         let point = sender.point
+        let deviceSize = WKInterfaceDevice.current().screenBounds
+        let scale =  Double(imageSize.width / deviceSize.width)
+        let scaledPoint = Point(x: point.x * scale, y: point.y * scale)
+
         Communicator.report(.swipeDown, message: point.description)
-        if let hotspot = hitTest(for: point, with: .swipeDown) {
+        if let hotspot = hitTest(for: scaledPoint, with: .swipeDown) {
+            guard let id = screen?.screen.uuid,
+                  let project = screen?.project else { return }
+            Telemetry.report(.swipeDown, at: scaledPoint, on: id, in: project._id, leadingTo: hotspot.target)
             transition(to: hotspot, in: Communicator.shared.currentProject!)
         } else {
             flashHotspots()
@@ -224,15 +254,21 @@ class ScreenInterfaceController: WKInterfaceController {
 
     @IBAction func didLongPress(_ sender: WKLongPressGestureRecognizer) {
         let point = sender.point
+        let deviceSize = WKInterfaceDevice.current().screenBounds
+        let scale =  Double(imageSize.width / deviceSize.width)
+        let scaledPoint = Point(x: point.x * scale, y: point.y * scale)
 
         let typ: ReportType = sender.state == .ended ? .longPressEnded : .longPressRecognized
         // TODO calculate time of press
         Communicator.report(typ, message: point.description)
 
-        if let hotspot = screen?.hitTest(for: point),
+        if let hotspot = screen?.hitTest(for: scaledPoint),
            hotspot.trigger == .longPress,
            typ == .longPressRecognized {
             transitioningTo = hotspot
+            guard let id = screen?.screen.uuid,
+                  let project = screen?.project else { return }
+            Telemetry.report(.longPress, at: scaledPoint, on: id, in: project._id, leadingTo: hotspot.target)
             transition(to: hotspot, in: Communicator.shared.currentProject!)
         } else {
             flashHotspots()
@@ -245,7 +281,7 @@ class ScreenInterfaceController: WKInterfaceController {
             NSLog("Error: no screen in project with ID \(hotspot.target)")
             return
         }
-        ScreenContainer(screen, in: project) { container in
+        _ = ScreenContainer(screen, in: project) { container in
             switch hotspot.transition {
             case .fromLeft:
                 self.pushController(withName: "screen", context: container)

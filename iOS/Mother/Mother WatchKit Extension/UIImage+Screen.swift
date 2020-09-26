@@ -38,7 +38,6 @@ extension Hotspot {
     func draw(into context: CGContext, for size: CGSize) {
         let sourceRect = cgRect
         let rect = CGRect(x: sourceRect.minX * size.width, y: sourceRect.minY * size.height, width: sourceRect.width * size.width, height: sourceRect.height * size.height)
-        print("drawing \(rect)")
         context.beginPath()
         let path = UIBezierPath(roundedRect: rect, cornerRadius: Hotspot.cornerRadius)
         context.addPath(path.cgPath)
