@@ -227,6 +227,9 @@ export default {
   updated() {
     this.$nextTick(() => {
       this.listeners();
+      // ================================ PRIORITY NUMBER 2 =========================== //
+      // check for hostspots on the screens
+      // draw them according to coordinates if they exist
     });
   },
 
@@ -277,6 +280,9 @@ export default {
       this.y1 = e.clientY;
     },
     drawRec(target) {
+      // ================================ PRIORITY NUMBER 1 =========================== //
+      // current location is on the window 
+      // calc location relative to image borders
       var x3 = Math.min(this.x1, this.x2);
       var x4 = Math.max(this.x1, this.x2);
       var y3 = Math.min(this.y1, this.y2);
@@ -302,7 +308,6 @@ export default {
         };
 
       this.$set(this.PROJECT.screens[parentIndex].hotspots, hotspotIndex, updatedHotspot);
-
       // RESET
       this.targetTrigger = '';
       this.targetTransition = '';
@@ -311,8 +316,11 @@ export default {
       this.parentTriggersId = '';
       this.hotspotTriggerId = '';
       this.showMenu = false;
-
-      // CALL API TO UPDATE THE SCREENS
+      
+      // ================================ PRIORITY NUMBER 3 =========================== //
+      // emit event listener from header button
+      // pass arg as props from APP
+      // watch for props to call API to save all changes made on the screens.
       await API.saveScreens(this.$route.params.id, this.PROJECT.screens);
     },
     uuidv4() {
