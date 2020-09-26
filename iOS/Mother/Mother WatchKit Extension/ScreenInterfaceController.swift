@@ -47,6 +47,8 @@ class ScreenInterfaceController: WKInterfaceController {
     @IBOutlet weak var longPressGestureRecognizer: WKLongPressGestureRecognizer!
     @IBOutlet weak var downSwipeGestureRecognizer: WKSwipeGestureRecognizer!
 
+    var imageSize = CGSize.zero
+    
     var transitioningTo: Hotspot?
     
     var screen: ScreenContainer? {
@@ -57,6 +59,20 @@ class ScreenInterfaceController: WKInterfaceController {
 
     func populate() {
         if let screen = screen, screen.isValid {
+            if let image = screen.image {
+                self.imageSize = image.size
+            } else {
+                self.imageSize = WKInterfaceDevice.current().screenBounds.size
+            }
+            print("Loading new screen. \(screen.screen.hotspots?.count ?? 0) hotspots found.")
+            let size = imageSize
+            print("Size > \(size)")
+            for hotspot in screen.screen.hotspots ?? [] {
+                let sourceRect = hotspot.cgRect
+                let rect = CGRect(x: sourceRect.minX * size.width, y: sourceRect.minY * size.height, width: sourceRect.width * size.width, height: sourceRect.height * size.height)
+                print("Source  > \(sourceRect)")
+                print("Hotspot > \(rect)")
+            }
             group.setBackgroundImage(screen.image)
             image.setImage(screen.hotspotImage)
             //            group.setBackgroundImage(screen?.image)
@@ -67,15 +83,16 @@ class ScreenInterfaceController: WKInterfaceController {
     
     override func awake(withContext context: Any?) {
         super.awake(withContext: context)
-        print("awake \(context)")
-
+        print("Context > \(String(describing: context))")
         if let screen = context as? ScreenContainer {
-            print("screen!")
+            print("Displaying screen \(screen.screen.uuid)")
             self.screen = screen
+        } else if let screen = context as? ScreenContainer {
+                print("Displaying screen \(screen.screen.uuid)")
+                self.screen = screen
         } else if let project = context as? Project, project.screens.count > 0 {
-            
-            self.screen = ScreenContainer(project.firstScreen()!, in: project) {
-                print("screen!")
+            self.screen = ScreenContainer(project.firstScreen()!, in: project) { container in
+                print("Displaying first screen as \(container.screen.uuid)")
                 self.populate()
             }
         } else {
@@ -127,7 +144,9 @@ class ScreenInterfaceController: WKInterfaceController {
     }
 
     func hitTest(for point: Point, with trigger: Trigger) -> Hotspot? {
-        if let hotspot = screen?.hitTest(for: point),
+        let scaledPoint = Point(x: point.x / Double(imageSize.width), y: point.y / Double(imageSize.height))
+        print("hit test for \(scaledPoint)")
+        if let hotspot = screen?.hitTest(for: scaledPoint),
            hotspot.trigger == trigger {
             return hotspot
         }
@@ -136,7 +155,12 @@ class ScreenInterfaceController: WKInterfaceController {
     
     @IBAction func didTap(_ sender: WKTapGestureRecognizer) {
         let point = sender.point
-        print("tap \(point)")
+        let deviceSize = WKInterfaceDevice.current().screenBounds
+        
+        let scale =  Double(imageSize.width / deviceSize.width)
+        let scaledPoint = Point(x: point.x * scale, y: point.y * scale)
+        
+        print("tap \(scaledPoint)")
         
         Communicator.report(.tap, message: point.description)
         
@@ -146,7 +170,7 @@ class ScreenInterfaceController: WKInterfaceController {
             return
         }
         
-        if let hotspot = hitTest(for: point, with: .tap) {
+        if let hotspot = hitTest(for: scaledPoint, with: .tap) {
             transition(to: hotspot, in: Communicator.shared.currentProject!)
         } else {
             flashHotspots()
@@ -221,21 +245,23 @@ class ScreenInterfaceController: WKInterfaceController {
             NSLog("Error: no screen in project with ID \(hotspot.target)")
             return
         }
-        switch hotspot.transition {
-        case .fromLeft:
-            pushController(withName: "screen", context: screen)
-            break
-        case .fromRight:
-            pushController(withName: "screen", context: screen)
-            break
-        case .fromTop:
-            break
-        case .fromBottom:
-            break
-        case .fade:
-            break
-        case .instant:
-            break
+        ScreenContainer(screen, in: project) { container in
+            switch hotspot.transition {
+            case .fromLeft:
+                self.pushController(withName: "screen", context: container)
+                break
+            case .fromRight:
+                self.pushController(withName: "screen", context: container)
+                break
+            case .fromTop:
+                break
+            case .fromBottom:
+                break
+            case .fade:
+                break
+            case .instant:
+                break
+            }
         }
     }
     
@@ -247,8 +273,8 @@ class ScreenInterfaceController: WKInterfaceController {
 
 extension WKGestureRecognizer {
     var point: Point {
-        let scale: CGFloat = WKInterfaceDevice.current().screenScale
-        return locationInObject().point(with: scale)
+//        let scale: CGFloat = WKInterfaceDevice.current().screenScale
+        return locationInObject().point(with: 1.0)
     }
 }
 

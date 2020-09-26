@@ -36,7 +36,7 @@ class ScreenContainer {
     var image: UIImage?
     var hotspotImage: UIImage?
     
-    init(_ screen: Screen, in project: Project, completion: @escaping () -> Void) {
+    init(_ screen: Screen, in project: Project, completion: @escaping (ScreenContainer) -> Void) {
         self.screen = screen
         self.project = project
         if let url = URL(string: screen.url) {
@@ -46,7 +46,7 @@ class ScreenContainer {
                     self.hotspotImage = self.hotspotImage(for: image)
                     self.isValid = true
                 }
-                completion()
+                completion(self)
             }
         }
     }
@@ -59,7 +59,8 @@ class ScreenContainer {
     }
     
     func hotspotImage(for image: UIImage) -> UIImage? {
-        UIGraphicsBeginImageContext(image.size)
+        let size = image.size
+        UIGraphicsBeginImageContext(size)
         guard let context = UIGraphicsGetCurrentContext() else {
             return nil
         }
@@ -68,7 +69,7 @@ class ScreenContainer {
         context.setStrokeColor(Hotspot.strokeColor)
         context.setFillColor(Hotspot.fillColor)
         
-        screen.hotspots?.forEach { $0.draw(into: context) }
+        screen.hotspots?.forEach { $0.draw(into: context, for: size) }
 
         // Convert to UIImage
         let cgimage = context.makeImage();

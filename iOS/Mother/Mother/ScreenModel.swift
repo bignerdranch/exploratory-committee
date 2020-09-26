@@ -66,22 +66,28 @@ struct Hotspot: Codable {
         self.trigger = trigger
     }
     enum CodingKeys: String, CodingKey {
-        case id, x1, x2, y1, y2, trigger, transition, destination
+        case id, x, y, width, height, trigger, transition, destination
     }
     
     init(from decoder: Decoder) throws {
-        let ctr = try decoder.container(keyedBy: CodingKeys.self)
-        id = try ctr.decode(String.self, forKey: .id)
-        let x1 = try ctr.decode(Double.self, forKey: .x1)
-        let x2 = try ctr.decode(Double.self, forKey: .x2)
-        let y1 = try ctr.decode(Double.self, forKey: .x1)
-        let y2 = try ctr.decode(Double.self, forKey: .y2)
-        rect = Rect.rect(x1, x2, y1, y2)
-        target = try ctr.decode(String.self, forKey: .destination)
-        let triggerStr = try ctr.decode(String.self, forKey: .trigger)
-        trigger = Trigger.trigger(from: triggerStr)
-        let transitionStr = try ctr.decode(String.self, forKey: .transition)
-        transition = Transition.from(transitionStr)
+        do {
+            let ctr = try decoder.container(keyedBy: CodingKeys.self)
+            id = try ctr.decode(String.self, forKey: .id)
+            let x = try ctr.decode(Double.self, forKey: .x)
+            let y = try ctr.decode(Double.self, forKey: .y)
+            let width = try ctr.decode(Double.self, forKey: .width)
+            let height = try ctr.decode(Double.self, forKey: .height)
+            rect = Rect(origin: Point(x: x, y: y), size: Size(width: width, height: height))
+            target = try ctr.decode(String.self, forKey: .destination)
+            let triggerStr = try ctr.decode(String.self, forKey: .trigger)
+            trigger = Trigger.trigger(from: triggerStr)
+            let transitionStr = try ctr.decode(String.self, forKey: .transition)
+            transition = Transition.from(transitionStr)
+            print("Hotspot > \(rect)")
+        } catch {
+            print("No! \(error)")
+            throw error
+        }
     }
     
     func encode(to encoder: Encoder) throws {
@@ -90,10 +96,10 @@ struct Hotspot: Codable {
         try ctr.encode(target, forKey: .destination)
         try ctr.encode(trigger, forKey: .trigger)
         try ctr.encode(transition, forKey: .transition)
-        try ctr.encode(rect.origin.x, forKey: .x1)
-        try ctr.encode(rect.origin.x + rect.size.width, forKey: .x2)
-        try ctr.encode(rect.origin.y, forKey: .y1)
-        try ctr.encode(rect.origin.y + rect.size.height, forKey: .y2)
+        try ctr.encode(rect.origin.x, forKey: .x)
+        try ctr.encode(rect.origin.y, forKey: .y)
+        try ctr.encode(rect.size.width, forKey: .width)
+        try ctr.encode(rect.size.height, forKey: .height)
     }
 }
 struct Screen: Codable {
@@ -102,16 +108,21 @@ struct Screen: Codable {
     let name: String
     let firstScreen: Bool
     let hotspots: [Hotspot]?
+    
+    var height: Double
+    var width: Double
 
     enum CodingKeys: String, CodingKey {
-        case uuid, url, name, hotspots, firstScreen
+        case uuid, url, name, hotspots, firstScreen, height, width
     }
-    init(uuid: String, url: String, name: String, firstScreen: Bool, hotspots: [Hotspot]?) {
+    init(uuid: String, url: String, name: String, firstScreen: Bool, hotspots: [Hotspot]?, height: Double, width: Double) {
         self.uuid = uuid
         self.url = url
         self.name = name
         self.firstScreen = firstScreen
         self.hotspots = hotspots
+        self.height = height
+        self.width = width
     }
     init(from decoder: Decoder) throws {
         let ctr = try decoder.container(keyedBy: CodingKeys.self)
@@ -121,6 +132,7 @@ struct Screen: Codable {
         do {
             hotspots = try ctr.decode([Hotspot].self, forKey: .hotspots)
         } catch {
+            print("derp \(error)")
             hotspots = []
         }
         do {
@@ -128,6 +140,13 @@ struct Screen: Codable {
             firstScreen = f
         } catch {
             firstScreen = false
+        }
+        do {
+            height = try ctr.decode(Double.self, forKey: .height)
+            width = try ctr.decode(Double.self, forKey: .width)
+        } catch {
+            height = 180
+            width = 170
         }
     }
 }
