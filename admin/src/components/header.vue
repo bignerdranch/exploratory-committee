@@ -1,72 +1,123 @@
 <template>
   <div class="page-container">
     <md-toolbar class="md-primary">
-      <md-button class="md-icon-button" @click="openMenu">
+      <md-button
+        class="md-icon-button"
+        @click="openMenu"
+      >
         <md-icon>menu</md-icon>
       </md-button>
-      
-      <md-button class="md-icon-button" @click="setShowDialog()">
+
+      <md-button
+        class="md-icon-button"
+        @click="setShowDialog()"
+      >
         <md-icon>add_circle_outline</md-icon>
       </md-button>
 
-      <md-button class="md-icon-button" @click="AddHotspot()">
+      <md-button
+        class="md-icon-button"
+        @click="AddHotspot()"
+      >
         <md-icon>aspect_ratio</md-icon>
       </md-button>
 
-      <md-button class="md-icon-button" @click="refresh()">
+      <md-button
+        class="md-icon-button"
+        @click="refresh()"
+      >
         <md-icon>refresh</md-icon>
       </md-button>
 
-      <span class="md-title" v-if="isItRoute">{{ projectName }}</span>
+      <span
+        class="md-title"
+        v-if="isItRoute"
+      >{{ projectName }}</span>
     </md-toolbar>
 
     <md-dialog :md-active.sync="showImageDialog">
       <md-dialog-title>Upload Screens</md-dialog-title>
-      <form enctype="multipart/form-data" novalidate v-on:submit.prevent="saveSceens">
-        <input 
-          type="file" 
-          name="uploadFieldName" 
+      <form
+        enctype="multipart/form-data"
+        novalidate
+        v-on:submit.prevent="saveSceens"
+      >
+        <input
+          type="file"
+          name="uploadFieldName"
           @change="handleUpload($event)"
           accept="image/*"
-          multiple 
-          class="input-file">
+          multiple
+          class="input-file"
+        >
       </form>
       <md-dialog-actions>
-        <md-button class="md-primary" @click="showImageDialog = false">CLOSE</md-button>
-        <md-button class="md-primary" type="submit" @click="saveSceens">UPLOAD</md-button>
+        <md-button
+          class="md-primary"
+          @click="showImageDialog = false"
+        >CLOSE</md-button>
+        <md-button
+          class="md-primary"
+          type="submit"
+          @click="saveSceens"
+        >UPLOAD</md-button>
       </md-dialog-actions>
     </md-dialog>
 
     <md-dialog :md-active.sync="showAddProjectDialog">
       <md-dialog-title>Add Project</md-dialog-title>
-      <form novalidate class="md-layout" @submit.prevent="addProject">
-          <md-card class="md-layout-item md-size-50 md-small-size-100">
-            <md-card-content>
-                <md-field>
-                    <md-input name="add-project-name" id="add-project-name" autocomplete="given-name" v-model="newProjectName"/>
-                  </md-field>
-              <md-dialog-actions>
-                <md-button class="md-primary" @click="showAddProjectDialog = false">CLOSE</md-button>
-                <md-button class="md-primary" type="submit">SAVE</md-button>
-              </md-dialog-actions>
-              </md-card-content>
-          </md-card>
+      <form
+        novalidate
+        class="md-layout"
+        @submit.prevent="addProject"
+      >
+        <md-card class="md-layout-item md-size-50 md-small-size-100">
+          <md-card-content>
+            <md-field>
+              <md-input
+                name="add-project-name"
+                id="add-project-name"
+                autocomplete="given-name"
+                v-model="newProjectName"
+              />
+            </md-field>
+            <md-dialog-actions>
+              <md-button
+                class="md-primary"
+                @click="showAddProjectDialog = false"
+              >CLOSE</md-button>
+              <md-button
+                class="md-primary"
+                type="submit"
+              >SAVE</md-button>
+            </md-dialog-actions>
+          </md-card-content>
+        </md-card>
       </form>
     </md-dialog>
 
-    <md-drawer :md-active.sync="showNavigation" md-swipeable>
-      <md-toolbar class="md-transparent" md-elevation="0">
+    <md-drawer
+      :md-active.sync="showNavigation"
+      md-swipeable
+    >
+      <md-toolbar
+        class="md-transparent"
+        md-elevation="0"
+      >
         <span class="sm-title">YOUR PROJECTS</span>
       </md-toolbar>
       <md-list>
         <md-list-item @click="showAddProjectDialog = true">
-            <md-icon>add_circle_outline</md-icon>
-            <span class="md-list-item-text">Add New Project</span>
+          <md-icon>add_circle_outline</md-icon>
+          <span class="md-list-item-text">Add New Project</span>
         </md-list-item>
         <md-divider></md-divider>
 
         <template v-for="(item, index) in projectsList">
-          <router-link :key=index :to="{ name: 'Project', params: { id: item._id } }">
+          <router-link
+            :key=index
+            :to="{ name: 'Project', params: { id: item._id } }"
+          >
             <md-list-item>
               <md-icon>watch</md-icon>
               <span class="md-list-item-text">{{ item.name }}</span>
@@ -84,7 +135,7 @@ import API from '../service';
 
 export default {
   name: 'Header',
-   props: {
+  props: {
     projectName: {
       default: '',
       type: String,
@@ -104,7 +155,7 @@ export default {
     projectsList: [],
     urls: [],
   }),
-   watch: {
+  watch: {
     finished() {
       console.log('finished recived');
     },
@@ -120,7 +171,7 @@ export default {
     setShowDialog() {
       this.showImageDialog = true;
     },
-    
+
     AddHotspot() {
       this.numHotspot++;
       this.$emit('hotspot', this.numHotspot)
@@ -129,13 +180,13 @@ export default {
     refresh() {
       location.reload();
     },
-    
+
     async saveSceens() {
       this.showImageDialog = false;
       await API.saveScreens(this.$route.params.id, this.urls);
       this.$emit('screens')
     },
-    
+
     async addProject() {
       const id = await API.addNewProject(this.newProjectName);
       this.projectsList = await API.getAllProjects();
@@ -168,20 +219,20 @@ export default {
               file: reader.result,
             },
           };
-          
-            const res = await axios(requestObj);
-            this.urls.push({ url: res.data.url, name: file.name, uuid: this.uuidv4(), hotspots: [] })
-          }.bind(this), false);
 
-          reader.readAsDataURL(file);
+          const res = await axios(requestObj);
+          this.urls.push({ url: res.data.url, name: file.name, uuid: this.uuidv4(), hotspots: [] })
+        }.bind(this), false);
+
+        reader.readAsDataURL(file);
       })
     },
     uuidv4() {
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) =>  {
-      const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
-  },
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+        const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    },
   }
 }
 </script>

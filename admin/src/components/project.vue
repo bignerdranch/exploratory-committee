@@ -1,13 +1,26 @@
 <template>
   <div>
     <div id="screen-wrapper">
-      <template v-for="(screen) in PROJECT.screens" >
-        <md-card :key="screen.name" class="screen-card">
-          <img :src="screen.url" class="screen" :data-id="screen.uuid" />
+      <template v-for="(screen) in PROJECT.screens">
+        <md-card
+          :key="screen.name"
+          class="screen-card"
+        >
+          <single-screen
+            :imgUrl="screen.url"
+            :key="index"
+            :uuid="screen.uuid"
+            class="screen"
+            @add-hotspot="addHotspot"
+          ></single-screen>
           <md-divider></md-divider>
           <div class="info-wrapper">
             <label class="screen-label">{{ screen.name }}</label>
-            <button class="btn-check-first" @click="markAsFirst(screen.uuid)" :class="{'first': screen.firstScreen}">
+            <button
+              class="btn-check-first"
+              @click="markAsFirst(screen.uuid)"
+              :class="{'first': screen.firstScreen}"
+            >
               <md-icon v-if="screen.firstScreen">first_page</md-icon>
               <md-icon v-else>info_outline</md-icon>
             </button>
@@ -17,54 +30,86 @@
     </div>
 
     <md-dialog :md-active.sync="showMenu">
-      <form novalidate class="md-layout" @submit.prevent="setActionsOnSpot">
+      <form
+        novalidate
+        class="md-layout"
+        @submit.prevent="setActionsOnSpot"
+      >
         <md-card class="md-layout-item">
           <md-card-content>
-              <md-field>
-                <label for="Target">Target</label>
-                <select name="target" id="target" v-model="targetScreen">
-                  <option></option>
-                  <template v-for="(screen, index) in PROJECT.screens">
-                    <option :value="screen.name" :key="index" >{{ screen.name }}</option>
-                  </template>
-                </select>
-              </md-field>
-              
-              <md-field>
-                <label for="transition">Transition</label>
-                <select name="transition" id="transition" v-model="targetTransition">
-                  <option></option>
-                  <template v-for="(transition, index) in transitionList">
-                    <option :value="transition" :key="index" >{{ transition }}</option>
-                  </template>
-                </select>
-              </md-field>
-              
-              <md-field>
-                <label for="transition">Triggers</label>
-                <select name="triggers" id="triggers" v-model="targetTrigger">
-                  <option></option>
-                  <template v-for="(trigger, index) in triggersList">
-                    <option :value="trigger" :key="index" >{{ trigger }}</option>
-                  </template>
-                </select>
-              </md-field>
+            <md-field>
+              <label for="Target">Target</label>
+              <select
+                name="target"
+                id="target"
+                v-model="targetScreen"
+              >
+                <option></option>
+                <template v-for="(screen, index) in PROJECT.screens">
+                  <option
+                    :value="screen.name"
+                    :key="index"
+                  >{{ screen.name }}</option>
+                </template>
+              </select>
+            </md-field>
+
+            <md-field>
+              <label for="transition">Transition</label>
+              <select
+                name="transition"
+                id="transition"
+                v-model="targetTransition"
+              >
+                <option></option>
+                <template v-for="(transition, index) in transitionList">
+                  <option
+                    :value="transition"
+                    :key="index"
+                  >{{ transition }}</option>
+                </template>
+              </select>
+            </md-field>
+
+            <md-field>
+              <label for="transition">Triggers</label>
+              <select
+                name="triggers"
+                id="triggers"
+                v-model="targetTrigger"
+              >
+                <option></option>
+                <template v-for="(trigger, index) in triggersList">
+                  <option
+                    :value="trigger"
+                    :key="index"
+                  >{{ trigger }}</option>
+                </template>
+              </select>
+            </md-field>
           </md-card-content>
 
           <md-card-actions>
-            <md-button type="submit" class="md-primary">Done</md-button>
-            </md-card-actions>
-          </md-card>
-        </form>
+            <md-button
+              type="submit"
+              class="md-primary"
+            >Done</md-button>
+          </md-card-actions>
+        </md-card>
+      </form>
     </md-dialog>
-  </div>  
+  </div>
 </template>
 
 <script>
 import API from '../service';
+import SingleScreen from './singleScreen';
 
 export default {
   name: 'Project',
+  components: {
+    SingleScreen,
+  },
   props: {
     screens: {
       default: 0,
@@ -88,8 +133,8 @@ export default {
     screensWithHotspots: [],
     currentParent: '',
     showMenu: false,
-    transitionList: ['left','right', 'top', 'bottom', 'fade' ,'instant'],
-    triggersList: ['swipeleft','swiperight', 'swipeup','swipedown', 'tap', 'longpress'],
+    transitionList: ['left', 'right', 'top', 'bottom', 'fade', 'instant'],
+    triggersList: ['swipeleft', 'swiperight', 'swipeup', 'swipedown', 'tap', 'longpress'],
     // FORM
     targetScreen: '',
     targetTransition: '',
@@ -99,47 +144,48 @@ export default {
   }),
 
   beforeRouteEnter(to, from, next) {
-    next(async(vm) => {
+    next(async (vm) => {
       vm.PROJECT = await API.getProject(to.params.id);
       vm.$emit('project-name', vm.PROJECT.name);
       // RESEY ALL VALUES
-      vm.x1= null;
-      vm.y1= null;
-      vm.x2= null;
-      vm.y2= null;
-      vm.targer= null;
-      vm.index= 0;
-      vm.numOfClicks= 0;
-      vm.finishedDrawing= 0;
-      vm.listOfTargets= [];
-      vm.screensWithHotspots= [];
-      vm.currentParent= '';
-      vm.showMenu= false;
+      vm.x1 = null;
+      vm.y1 = null;
+      vm.x2 = null;
+      vm.y2 = null;
+      vm.targer = null;
+      vm.index = 0;
+      vm.numOfClicks = 0;
+      vm.finishedDrawing = 0;
+      vm.listOfTargets = [];
+      vm.screensWithHotspots = [];
+      vm.currentParent = '';
+      vm.showMenu = false;
     });
   },
 
-  async beforeRouteUpdate (to, from ,next) {
+  async beforeRouteUpdate(to, from, next) {
     this.PROJECT = await API.getProject(to.params.id);
     this.$emit('project-name', this.PROJECT.name);
     // RESEY ALL VALUES
-    this.x1= null;
-    this.y1= null;
-    this.x2= null;
-    this.y2= null;
-    this.targer= null;
-    this.index= 0;
-    this.numOfClicks= 0;
-    this.finishedDrawing= 0;
-    this.listOfTargets= [];
-    this.screensWithHotspots= [];
-    this.currentParent= '';
-    this.showMenu= false;
+    this.x1 = null;
+    this.y1 = null;
+    this.x2 = null;
+    this.y2 = null;
+    this.targer = null;
+    this.index = 0;
+    this.numOfClicks = 0;
+    this.finishedDrawing = 0;
+    this.listOfTargets = [];
+    this.screensWithHotspots = [];
+    this.currentParent = '';
+    this.showMenu = false;
 
     next();
   },
 
   watch: {
     hotspot() {
+      // call API 
       this.listeners();
       this.index++;
     },
@@ -152,13 +198,15 @@ export default {
         rec.addEventListener('contextmenu', this.openTriggerMenu, true)
         this.drawRec(this.listOfTargets[this.finishedDrawing]);
         const el = this.listOfTargets[this.finishedDrawing];
-        this.screensWithHotspots.push({ screen: this.currentParent, hotspot: {
+        this.screensWithHotspots.push({
+          screen: this.currentParent, hotspot: {
             id: el.getAttribute('id'),
             x1: this.x1,
             y1: this.y1,
             x2: this.x2,
             y2: this.y2,
-          }});
+          }
+        });
         this.finishedDrawing++;
         this.numOfClicks = 0;
       }
@@ -166,12 +214,16 @@ export default {
   },
 
   methods: {
+    addHotspot(data) {
+      const i = this.PROJECT.screens.findIndex(i => i.uuid === data.uuid);
+      this.$set(this.PROJECT.screens[i].hotspots, this.PROJECT.screens[i].hotspots.length, data.rect);
+    },
     startHotspot(parentScreen) {
       this.x1 = null;
       this.x2 = null;
       this.y1 = null;
       this.y2 = null;
-      this.currentParent= '';
+      this.currentParent = '';
       const target = document.createElement('div');
       target.setAttribute("id", this.uuidv4());
       document.getElementById('screen-wrapper').appendChild(target);
@@ -184,7 +236,7 @@ export default {
     },
     listeners() {
       const listOfImages = document.getElementsByClassName("screen");
-      
+
       listOfImages.forEach(image => {
         image.addEventListener('mousedown', this.handlerOnMouseDown, true);
         image.addEventListener('mouseup', this.removeListeners, true);
@@ -234,15 +286,15 @@ export default {
       // CALL API TO UPDATE THE SCREENS
     },
     uuidv4() {
-       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) =>  {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
         const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
       });
     },
-    
+
     async markAsFirst(uuid) {
       const i = this.PROJECT.screens.findIndex(i => i.uuid === uuid);
-      this.PROJECT.screens[i] = {...this.PROJECT.screens[i], firstScreen: true };
+      this.PROJECT.screens[i] = { ...this.PROJECT.screens[i], firstScreen: true };
 
       this.PROJECT.screens.forEach((part, index) => {
         part['firstScreen'] = false;
@@ -250,7 +302,7 @@ export default {
           part['firstScreen'] = true;
         }
       });
-      
+
       await API.saveScreens(this.$route.params.id, this.PROJECT.screens);
     },
   },
@@ -281,15 +333,15 @@ export default {
 
   .info-wrapper {
     padding: 5px;
-    
+
     .screen-label {
       white-space: nowrap;
       overflow: hidden;
-      width: 150px; 
+      width: 150px;
       text-overflow: ellipsis;
       display: inline-block;
     }
-    
+
     .first.btn-check-first {
       i {
         color: green;
@@ -305,7 +357,6 @@ export default {
         color: grey;
       }
     }
-
   }
 }
 
@@ -315,8 +366,10 @@ export default {
   }
 }
 
-#target, #transition, #triggers /deep/ {
-    border: none;
-    width: 100%;
-  }
+#target,
+#transition,
+#triggers /deep/ {
+  border: none;
+  width: 100%;
+}
 </style>
